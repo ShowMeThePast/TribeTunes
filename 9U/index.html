@@ -63,6 +63,10 @@
         .song-entry button:hover {
             background-color: #3a2415;
         }
+        .song-entry button:disabled {
+            background-color: #a0a0a0; /* Grayed out when disabled */
+            cursor: not-allowed;
+        }
         .form-container {
             flex: 2;
             min-width: 300px;
@@ -155,20 +159,27 @@
             // Check if the song list has reached the limit
             let songs = JSON.parse(localStorage.getItem("walkoutSongs")) || [];
             if (songs.length >= 24) {
-                document.getElementById("errorMessage").textContent = "Song limit reached (24 songs). Please edit or remove a song to add a new one.";
+                document.getElementById("errorMessage").textContent = "Song limit reached (24 songs). Please delete a song to add a new one.";
                 return;
             }
 
-            const childName = document.getElementById("childName").value;
-            const songName = document.getElementById("songName").value;
-            const artist = document.getElementById("artist").value;
+            const childName = document.getElementById("childName").value.trim();
+            const songName = document.getElementById("songName").value.trim();
+            const artist = document.getElementById("artist").value.trim();
             const startSecond = document.getElementById("startSecond").value;
+
+            // Validate all fields are non-empty after trimming
+            if (!childName || !songName || !artist || !startSecond) {
+                document.getElementById("errorMessage").textContent = "All fields must be filled out with valid values.";
+                return;
+            }
 
             const song = {
                 childName: childName,
                 name: songName,
                 artist: artist,
-                start: startSecond
+                start: startSecond,
+                isValid: true // Flag to indicate the entry is fully valid
             };
 
             songs.push(song);
@@ -179,25 +190,44 @@
             document.getElementById("errorMessage").textContent = ""; // Clear error message on successful add
         }
 
+        // Delete a song
+        function deleteSong(index) {
+            let songs = JSON.parse(localStorage.getItem("walkoutSongs")) || [];
+            if (songs[index].isValid) {
+                if (confirm("Are you sure you want to delete this song?")) {
+                    songs.splice(index, 1); // Remove the song at the specified index
+                    localStorage.setItem("walkoutSongs", JSON.stringify(songs));
+                    displaySongs();
+                }
+            } else {
+                alert("This song cannot be deleted because it was not entered with all valid fields.");
+            }
+        }
+
         // Edit a song
         function editSong(index) {
             let songs = JSON.parse(localStorage.getItem("walkoutSongs")) || [];
-            const song = songs[index];
+            if (songs[index].isValid) {
+                const song = songs[index];
 
-            const newChildName = prompt("Edit Child's Name:", song.childName);
-            const newSongName = prompt("Edit Song Name:", song.name);
-            const newArtist = prompt("Edit Artist:", song.artist);
-            const newStart = prompt("Edit Start Second:", song.start);
+                const newChildName = prompt("Edit Child's Name:", song.childName);
+                const newSongName = prompt("Edit Song Name:", song.name);
+                const newArtist = prompt("Edit Artist:", song.artist);
+                const newStart = prompt("Edit Start Second:", song.start);
 
-            if (newChildName && newSongName && newArtist && newStart) {
-                songs[index] = {
-                    childName: newChildName,
-                    name: newSongName,
-                    artist: newArtist,
-                    start: newStart
-                };
-                localStorage.setItem("walkoutSongs", JSON.stringify(songs));
-                displaySongs();
+                if (newChildName && newSongName && newArtist && newStart) {
+                    songs[index] = {
+                        childName: newChildName.trim(),
+                        name: newSongName.trim(),
+                        artist: newArtist.trim(),
+                        start: newStart,
+                        isValid: true
+                    };
+                    localStorage.setItem("walkoutSongs", JSON.stringify(songs));
+                    displaySongs();
+                }
+            } else {
+                alert("This song cannot be edited because it was not entered with all valid fields.");
             }
         }
 
@@ -216,8 +246,16 @@
                     songDiv.innerHTML = `Child: ${song.childName}<br>Song: "${song.name}" by ${song.artist}<br>Starting at: ${song.start} seconds<br>`;
                     const editButton = document.createElement("button");
                     editButton.textContent = "Edit";
+                    editButton.disabled = !song.isValid; // Disable if not valid
                     editButton.onclick = () => editSong(index);
                     songDiv.appendChild(editButton);
+
+                    const deleteButton = document.createElement("button");
+                    deleteButton.textContent = "Delete";
+                    deleteButton.disabled = !song.isValid; // Disable if not valid
+                    deleteButton.onclick = () => deleteSong(index);
+                    songDiv.appendChild(deleteButton);
+
                     songList.appendChild(songDiv);
                 });
             }
