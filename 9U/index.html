@@ -167,7 +167,7 @@
                 <input type="number" id="childNumber" name="childNumber" min="0" max="99" placeholder="e.g., 12" required>
 
                 <label for="songName">Song Name:</label>
-                <input type="text" id="songName" name="songName" placeholder="e.g., Sweet Caroline" required>
+                <input type="text" id="songName" name="songName" placeholder="e.g., Sweet Caroline 2023" required>
 
                 <label for="artist">Artist:</label>
                 <input type="text" id="artist" name="artist" placeholder="e.g., Neil Diamond" required>
@@ -175,14 +175,23 @@
                 <label for="startSecond">Start Second:</label>
                 <input type="number" id="startSecond" name="startSecond" min="0" placeholder="e.g., 30" required>
 
+                <label for="battingOrder">Batting Order:</label>
+                <input type="number" id="battingOrder" name="battingOrder" min="1" max="9" placeholder="e.g., 1" required>
+
+                <label for="positionPlayed">Position Played:</label>
+                <input type="text" id="positionPlayed" name="positionPlayed" placeholder="e.g., Pitcher" required>
+
                 <button type="submit">Add Song</button>
             </form>
             <div id="errorMessage" class="error-message"></div>
             <div class="info-box">
                 <p><strong>Input Rules:</strong></p>
                 <ul>
-                    <li>Child's Name, Song Name, and Artist must contain only letters (a-z, A-Z) and spaces.</li>
+                    <li>Child's Name and Artist must contain only letters (a-z, A-Z) and spaces.</li>
+                    <li>Song Name can contain letters (a-z, A-Z), numbers (0-9), and spaces.</li>
                     <li>Child's Number must be a number between 0 and 99.</li>
+                    <li>Batting Order must be a number between 1 and 9.</li>
+                    <li>Position Played must contain only letters and spaces.</li>
                     <li>Start Second must contain only numbers (0-9).</li>
                     <li>No special characters are allowed in any field.</li>
                 </ul>
@@ -195,7 +204,7 @@
         const SECRET_CODE = "kickapoo2025";
         const TIMEOUT = 60 * 1000;
         let lastAdditionTime = null;
-        const GOOGLE_SHEETS_API = "https://script.google.com/macros/s/AKfycbx8FMscTLAmkcjf5vgvwigzgHHFR7rM08WPGIsie6h4m7irUkPoIMe3Jvbmoz3jdiUp/exec";
+        const GOOGLE_SHEETS_API = "https://script.google.com/macros/s/AKfycbytieoeqhgnb3t9IPqrgxkwgAiywLuucMyNmvXBSjwDUciZI9mAffvhI1w4LAKKuMQ3/exec";
 
         // Load songs from Google Sheets when the page loads
         document.addEventListener("DOMContentLoaded", () => {
@@ -219,103 +228,91 @@
             }
         }
 
-        // Add a song to Google Sheets using a hidden form submission to bypass CORS
-        function addSong(event) {
+        // Add a song to Google Sheets
+        async function addSong(event) {
             event.preventDefault();
 
-            fetchSongsAndReturn().then(songs => {
-                if (songs.length >= 24) {
-                    document.getElementById("errorMessage").textContent = "Song limit reached (24 songs). Please delete a song to add a new one.";
-                    return;
-                }
+            const songs = await fetchSongsAndReturn();
+            if (songs.length >= 24) {
+                document.getElementById("errorMessage").textContent = "Song limit reached (24 songs). Please delete a song to add a new one.";
+                return;
+            }
 
-                const childName = document.getElementById("childName").value.trim();
-                const childNumber = document.getElementById("childNumber").value;
-                const songName = document.getElementById("songName").value.trim();
-                const artist = document.getElementById("artist").value.trim();
-                const startSecond = document.getElementById("startSecond").value;
+            const childName = document.getElementById("childName").value.trim();
+            const childNumber = document.getElementById("childNumber").value;
+            const songName = document.getElementById("songName").value.trim();
+            const artist = document.getElementById("artist").value.trim();
+            const startSecond = document.getElementById("startSecond").value;
+            const battingOrder = document.getElementById("battingOrder").value;
+            const positionPlayed = document.getElementById("positionPlayed").value.trim();
 
-                const alphaRegex = /^[a-zA-Z\s]+$/;
-                const numberRegex = /^[0-9]+$/;
+            const alphaRegex = /^[a-zA-Z\s]+$/; // For Child's Name, Artist, and Position Played
+            const songNameRegex = /^[a-zA-Z0-9\s]+$/; // For Song Name (allows numbers)
+            const numberRegex = /^[0-9]+$/;
 
-                if (!alphaRegex.test(childName)) {
-                    document.getElementById("errorMessage").textContent = "Child's Name must contain only letters and spaces.";
-                    return;
-                }
-                if (!numberRegex.test(childNumber) || childNumber < 0 || childNumber > 99) {
-                    document.getElementById("errorMessage").textContent = "Child's Number must be a number between 0 and 99.";
-                    return;
-                }
-                if (!alphaRegex.test(songName)) {
-                    document.getElementById("errorMessage").textContent = "Song Name must contain only letters and spaces.";
-                    return;
-                }
-                if (!alphaRegex.test(artist)) {
-                    document.getElementById("errorMessage").textContent = "Artist must contain only letters and spaces.";
-                    return;
-                }
-                if (!numberRegex.test(startSecond)) {
-                    document.getElementById("errorMessage").textContent = "Start Second must contain only numbers.";
-                    return;
-                }
+            if (!alphaRegex.test(childName)) {
+                document.getElementById("errorMessage").textContent = "Child's Name must contain only letters and spaces.";
+                return;
+            }
+            if (!numberRegex.test(childNumber) || childNumber < 0 || childNumber > 99) {
+                document.getElementById("errorMessage").textContent = "Child's Number must be a number between 0 and 99.";
+                return;
+            }
+            if (!songNameRegex.test(songName)) {
+                document.getElementById("errorMessage").textContent = "Song Name must contain only letters, numbers, and spaces.";
+                return;
+            }
+            if (!alphaRegex.test(artist)) {
+                document.getElementById("errorMessage").textContent = "Artist must contain only letters and spaces.";
+                return;
+            }
+            if (!numberRegex.test(startSecond)) {
+                document.getElementById("errorMessage").textContent = "Start Second must contain only numbers.";
+                return;
+            }
+            if (!numberRegex.test(battingOrder) || battingOrder < 1 || battingOrder > 9) {
+                document.getElementById("errorMessage").textContent = "Batting Order must be a number between 1 and 9.";
+                return;
+            }
+            if (!alphaRegex.test(positionPlayed)) {
+                document.getElementById("errorMessage").textContent = "Position Played must contain only letters and spaces.";
+                return;
+            }
 
-                const song = {
-                    childName: childName,
-                    childNumber: childNumber,
-                    name: songName,
-                    artist: artist,
-                    start: startSecond
-                };
+            const song = {
+                childName: childName,
+                childNumber: childNumber,
+                name: songName,
+                artist: artist,
+                start: startSecond,
+                battingOrder: battingOrder,
+                positionPlayed: positionPlayed
+            };
 
-                // Use a hidden form to submit the POST request
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = GOOGLE_SHEETS_API;
-                form.style.display = 'none';
-
-                const dataInput = document.createElement('input');
-                dataInput.type = 'hidden';
-                dataInput.name = 'data';
-                dataInput.value = JSON.stringify({ action: "add", song: song });
-                form.appendChild(dataInput);
-
-                document.body.appendChild(form);
-
-                // Submit the form and handle the response
-                fetch(GOOGLE_SHEETS_API, {
-                    method: 'POST',
-                    body: new FormData(form),
+            try {
+                const response = await fetch(GOOGLE_SHEETS_API, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ action: "add", song: song }),
                     mode: 'cors',
                     redirect: 'follow'
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.text().then(errorText => {
-                            throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
-                        });
-                    }
-                    return response.json();
-                })
-                .then(updatedSongs => {
-                    if (updatedSongs.error) {
-                        throw new Error(`Server error: ${updatedSongs.error}`);
-                    }
-                    lastAdditionTime = new Date().getTime();
-                    displaySongs(updatedSongs);
-                    document.getElementById("songForm").reset();
-                    document.getElementById("errorMessage").textContent = "";
-                })
-                .catch(error => {
-                    console.error("Error adding song:", error);
-                    document.getElementById("errorMessage").textContent = `Error adding song: ${error.message}. Check console for details.`;
-                })
-                .finally(() => {
-                    document.body.removeChild(form);
                 });
-            }).catch(error => {
-                console.error("Error fetching songs before adding:", error);
-                document.getElementById("errorMessage").textContent = `Error adding song: ${error.message}. Check console for details.`;
-            });
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+                }
+                const updatedSongs = await response.json();
+                if (updatedSongs.error) {
+                    throw new Error(`Server error: ${updatedSongs.error}`);
+                }
+                lastAdditionTime = new Date().getTime();
+                displaySongs(updatedSongs);
+                document.getElementById("songForm").reset();
+                document.getElementById("errorMessage").textContent = "";
+            } catch (error) {
+                console.error("Error adding song:", error);
+                document.getElementById("errorMessage").textContent = `Error adding song: ${error.message}. Check console for details or ensure the web app URL and permissions are correct.`;
+            }
         }
 
         // Delete a song from Google Sheets
@@ -327,22 +324,10 @@
             if (isAdmin || (timeElapsed <= TIMEOUT)) {
                 if (confirm("Are you sure you want to delete this song?")) {
                     try {
-                        const form = document.createElement('form');
-                        form.method = 'POST';
-                        form.action = GOOGLE_SHEETS_API;
-                        form.style.display = 'none';
-
-                        const dataInput = document.createElement('input');
-                        dataInput.type = 'hidden';
-                        dataInput.name = 'data';
-                        dataInput.value = JSON.stringify({ action: "delete", index: index });
-                        form.appendChild(dataInput);
-
-                        document.body.appendChild(form);
-
                         const response = await fetch(GOOGLE_SHEETS_API, {
-                            method: 'POST',
-                            body: new FormData(form),
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ action: "delete", index: index }),
                             mode: 'cors',
                             redirect: 'follow'
                         });
@@ -358,9 +343,6 @@
                     } catch (error) {
                         console.error("Error deleting song:", error);
                         document.getElementById("errorMessage").textContent = `Error deleting song: ${error.message}. Check console for details.`;
-                    } finally {
-                        const form = document.querySelector('form');
-                        if (form) document.body.removeChild(form);
                     }
                 }
             } else {
@@ -382,11 +364,14 @@
                 const newSongName = prompt("Edit Song Name:", song.name);
                 const newArtist = prompt("Edit Artist:", song.artist);
                 const newStart = prompt("Edit Start Second:", song.start);
+                const newBattingOrder = prompt("Edit Batting Order:", song.battingOrder);
+                const newPositionPlayed = prompt("Edit Position Played:", song.positionPlayed);
 
-                const alphaRegex = /^[a-zA-Z\s]+$/;
+                const alphaRegex = /^[a-zA-Z\s]+$/; // For Child's Name, Artist, and Position Played
+                const songNameRegex = /^[a-zA-Z0-9\s]+$/; // For Song Name (allows numbers)
                 const numberRegex = /^[0-9]+$/;
 
-                if (newChildName && newChildNumber && newSongName && newArtist && newStart) {
+                if (newChildName && newChildNumber && newSongName && newArtist && newStart && newBattingOrder && newPositionPlayed) {
                     if (!alphaRegex.test(newChildName.trim())) {
                         alert("Child's Name must contain only letters and spaces.");
                         return;
@@ -395,8 +380,8 @@
                         alert("Child's Number must be a number between 0 and 99.");
                         return;
                     }
-                    if (!alphaRegex.test(newSongName.trim())) {
-                        alert("Song Name must contain only letters and spaces.");
+                    if (!songNameRegex.test(newSongName.trim())) {
+                        alert("Song Name must contain only letters, numbers, and spaces.");
                         return;
                     }
                     if (!alphaRegex.test(newArtist.trim())) {
@@ -407,32 +392,30 @@
                         alert("Start Second must contain only numbers.");
                         return;
                     }
+                    if (!numberRegex.test(newBattingOrder) || newBattingOrder < 1 || newBattingOrder > 9) {
+                        alert("Batting Order must be a number between 1 and 9.");
+                        return;
+                    }
+                    if (!alphaRegex.test(newPositionPlayed.trim())) {
+                        alert("Position Played must contain only letters and spaces.");
+                        return;
+                    }
 
                     const updatedSong = {
                         childName: newChildName.trim(),
                         childNumber: newChildNumber,
                         name: newSongName.trim(),
                         artist: newArtist.trim(),
-                        start: newStart
+                        start: newStart,
+                        battingOrder: newBattingOrder,
+                        positionPlayed: newPositionPlayed.trim()
                     };
 
                     try {
-                        const form = document.createElement('form');
-                        form.method = 'POST';
-                        form.action = GOOGLE_SHEETS_API;
-                        form.style.display = 'none';
-
-                        const dataInput = document.createElement('input');
-                        dataInput.type = 'hidden';
-                        dataInput.name = 'data';
-                        dataInput.value = JSON.stringify({ action: "edit", index: index, song: updatedSong });
-                        form.appendChild(dataInput);
-
-                        document.body.appendChild(form);
-
                         const response = await fetch(GOOGLE_SHEETS_API, {
-                            method: 'POST',
-                            body: new FormData(form),
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ action: "edit", index: index, song: updatedSong }),
                             mode: 'cors',
                             redirect: 'follow'
                         });
@@ -449,9 +432,6 @@
                     } catch (error) {
                         console.error("Error editing song:", error);
                         document.getElementById("errorMessage").textContent = `Error editing song: ${error.message}. Check console for details.`;
-                    } finally {
-                        const form = document.querySelector('form');
-                        if (form) document.body.removeChild(form);
                     }
                 }
             } else {
@@ -488,7 +468,7 @@
                 songs.forEach((song, index) => {
                     const songDiv = document.createElement("div");
                     songDiv.className = "song-entry";
-                    songDiv.innerHTML = `Child: ${song.childName} (#${song.childNumber})<br>Song: "${song.name}" by ${song.artist}<br>Starting at: ${song.start} seconds<br>`;
+                    songDiv.innerHTML = `Child: ${song.childName} (#${song.childNumber})<br>Song: "${song.name}" by ${song.artist}<br>Starting at: ${song.start} seconds<br>Batting Order: ${song.battingOrder}<br>Position: ${song.positionPlayed}<br>`;
                     const editButton = document.createElement("button");
                     editButton.textContent = "Edit";
                     const currentTime = new Date().getTime();
