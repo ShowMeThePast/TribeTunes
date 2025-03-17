@@ -70,26 +70,5 @@
         <p>Help us choose the best walk-up songs for our baseball hitters! Please leave a comment below suggesting <strong>two songs</strong> you’d love to hear as players step up to bat. Include the song titles and artists (e.g., "Sweet Child O' Mine" by Guns N' Roses and "Uptown Funk" by Mark Ronson ft. Bruno Mars).</p>
         <p>Let’s make every at-bat epic!</p>
     </div>
-
-    <button class="load-comments" onclick="loadComments()">Load Comments</button>
-    <div id="disqus_thread"></div>
-
-    <script>
-        function loadComments() {
-            var disqus_config = function () {
-                this.page.url = "https://showmethepast.github.io/TribeTunes/"; // Updated URL
-                this.page.identifier = "tribe-tunes-walk-up-songs";
-                this.page.title = "Baseball Walk-Up Song Selector";
-            };
-
-            var d = document, s = d.createElement('script');
-            s.src = 'https://<your-disqus-shortname>.disqus.com/embed.js';
-            s.setAttribute('data-timestamp', +new Date());
-            (d.head || d.body).appendChild(s);
-
-            // Hide the button after loading
-            document.querySelector('.load-comments').style.display = 'none';
-        }
-    </script>
 </body>
 </html>
