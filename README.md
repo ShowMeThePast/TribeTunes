@@ -75,7 +75,7 @@
     <script>
         function loadComments() {
             var disqus_config = function () {
-                this.page.url = "https://<your-username>.github.io"; // Replace with your GitHub Pages URL
+                this.page.url = "https://showmethepast.github.io/TribeTunes/"; // Replace with your GitHub Pages URL
                 this.page.identifier = "walk-up-songs";
                 this.page.title = "Baseball Walk-Up Song Selector";
             };
