@@ -195,7 +195,7 @@
         const SECRET_CODE = "kickapoo2025";
         const TIMEOUT = 60 * 1000;
         let lastAdditionTime = null;
-        const GOOGLE_SHEETS_API = "https://script.google.com/macros/s/AKfycbzI1R9BhbZePy5FTkgjKnvhLavMFMvX8LQc2x6aBBJrqCDp0wqa-LPx69cJCzR4EQ9Y/exec";
+        const GOOGLE_SHEETS_API = "https://script.google.com/macros/s/AKfycbzI1R9BhbZePy5FTkgjKnvhLavMFMvX8LQc2x6aBBJrqCDp0wqa-LPx69cJCzR4EQ9Y/exec"; // Replace with the new production web app URL
 
         // Load songs from Google Sheets when the page loads
         document.addEventListener("DOMContentLoaded", () => {
@@ -206,7 +206,7 @@
         // Fetch songs from Google Sheets
         async function fetchSongs() {
             try {
-                const response = await fetch(GOOGLE_SHEETS_API);
+                const response = await fetch(GOOGLE_SHEETS_API, { mode: 'cors' });
                 if (!response.ok) {
                     const errorText = await response.text();
                     throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
@@ -271,7 +271,8 @@
                 const response = await fetch(GOOGLE_SHEETS_API, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ action: "add", song: song })
+                    body: JSON.stringify({ action: "add", song: song }),
+                    mode: 'cors'
                 });
                 if (!response.ok) {
                     const errorText = await response.text();
@@ -284,7 +285,7 @@
                 document.getElementById("errorMessage").textContent = "";
             } catch (error) {
                 console.error("Error adding song:", error);
-                document.getElementById("errorMessage").textContent = `Error adding song: ${error.message}. Check console for details.`;
+                document.getElementById("errorMessage").textContent = `Error adding song: ${error.message}. Check console for details or ensure the web app URL and permissions are correct.`;
             }
         }
 
@@ -300,7 +301,8 @@
                         const response = await fetch(GOOGLE_SHEETS_API, {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ action: "delete", index: index })
+                            body: JSON.stringify({ action: "delete", index: index }),
+                            mode: 'cors'
                         });
                         if (!response.ok) {
                             const errorText = await response.text();
@@ -370,14 +372,15 @@
                         const response = await fetch(GOOGLE_SHEETS_API, {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ action: "edit", index: index, song: updatedSong })
+                            body: JSON.stringify({ action: "edit", index: index, song: updatedSong }),
+                            mode: 'cors'
                         });
                         if (!response.ok) {
                             const errorText = await response.text();
                             throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
                         }
                         const updatedSongs = await response.json();
-                        lastAdditionTime = new Date().getTime();
+                        lastAdditionTime = currentTime;
                         displaySongs(updatedSongs);
                     } catch (error) {
                         console.error("Error editing song:", error);
@@ -392,7 +395,7 @@
         // Helper function to fetch songs and return them
         async function fetchSongsAndReturn() {
             try {
-                const response = await fetch(GOOGLE_SHEETS_API);
+                const response = await fetch(GOOGLE_SHEETS_API, { mode: 'cors' });
                 if (!response.ok) {
                     const errorText = await response.text();
                     throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
