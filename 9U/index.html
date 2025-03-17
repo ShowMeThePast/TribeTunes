@@ -135,31 +135,6 @@
             background-color: #fff;
             font-style: italic;
         }
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            visibility: hidden;
-        }
-        .spinner {
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid #F3BB21;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
     </style>
 </head>
 <body>
@@ -215,26 +190,12 @@
         </div>
     </div>
 
-    <!-- Loading Indicator -->
-    <div id="loadingOverlay" class="loading-overlay">
-        <div class="spinner"></div>
-    </div>
-
     <script>
         let isAdmin = false;
         const SECRET_CODE = "kickapoo2025";
         const TIMEOUT = 60 * 1000;
         let lastAdditionTime = null;
-        const GOOGLE_SHEETS_API = "https://script.google.com/macros/s/AKfycbxhLVY0IXgIKPqQ_a-D9YG4dUgeOQm6-cJG1FjaUIE/dev"; //Google Apps Script web app URL
-
-        // Loading indicator functions
-        function showLoading() {
-            document.getElementById("loadingOverlay").style.visibility = "visible";
-        }
-
-        function hideLoading() {
-            document.getElementById("loadingOverlay").style.visibility = "hidden";
-        }
+        const GOOGLE_SHEETS_API = "https://script.google.com/macros/s/AKfycbxhLVY0IXgIKPqQ_a-D9YG4dUgeOQm6-cJG1FjaUIE/dev"; // Replace with your Google Apps Script web app URL
 
         // Load songs from Google Sheets when the page loads
         document.addEventListener("DOMContentLoaded", () => {
@@ -244,7 +205,6 @@
 
         // Fetch songs from Google Sheets
         async function fetchSongs() {
-            showLoading();
             try {
                 const response = await fetch(GOOGLE_SHEETS_API);
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -252,9 +212,7 @@
                 displaySongs(songs);
             } catch (error) {
                 console.error("Error fetching songs:", error);
-                document.getElementById("songList").innerHTML = "<p>Error loading songs. Check console for details.</p>";
-            } finally {
-                hideLoading();
+                document.getElementById("songList").innerHTML = "<p>Error loading songs. Check console for details or ensure the web app URL is correct.</p>";
             }
         }
 
@@ -307,21 +265,20 @@
             };
 
             try {
-                showLoading();
-                await fetch(GOOGLE_SHEETS_API, {
+                const response = await fetch(GOOGLE_SHEETS_API, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ action: "add", song: song })
                 });
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const updatedSongs = await response.json();
                 lastAdditionTime = new Date().getTime();
-                fetchSongs();
+                displaySongs(updatedSongs);
                 document.getElementById("songForm").reset();
                 document.getElementById("errorMessage").textContent = "";
             } catch (error) {
                 console.error("Error adding song:", error);
-                document.getElementById("errorMessage").textContent = `Error adding song: ${error.message}. Check console for details.`;
-            } finally {
-                hideLoading();
+                document.getElementById("errorMessage").textContent = `Error adding song: ${error.message}. Check console or ensure the web app URL and permissions are correct.`;
             }
         }
 
@@ -334,18 +291,17 @@
             if (isAdmin || (timeElapsed <= TIMEOUT)) {
                 if (confirm("Are you sure you want to delete this song?")) {
                     try {
-                        showLoading();
-                        await fetch(GOOGLE_SHEETS_API, {
+                        const response = await fetch(GOOGLE_SHEETS_API, {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({ action: "delete", index: index })
                         });
-                        fetchSongs();
+                        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                        const updatedSongs = await response.json();
+                        displaySongs(updatedSongs);
                     } catch (error) {
                         console.error("Error deleting song:", error);
-                        document.getElementById("errorMessage").textContent = `Error deleting song: ${error.message}. Check console for details.`;
-                    } finally {
-                        hideLoading();
+                        document.getElementById("errorMessage").textContent = `Error deleting song: ${error.message}. Check console or ensure the web app URL and permissions are correct.`;
                     }
                 }
             } else {
@@ -402,19 +358,18 @@
                     };
 
                     try {
-                        showLoading();
-                        await fetch(GOOGLE_SHEETS_API, {
+                        const response = await fetch(GOOGLE_SHEETS_API, {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({ action: "edit", index: index, song: updatedSong })
                         });
+                        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                        const updatedSongs = await response.json();
                         lastAdditionTime = currentTime;
-                        fetchSongs();
+                        displaySongs(updatedSongs);
                     } catch (error) {
                         console.error("Error editing song:", error);
-                        document.getElementById("errorMessage").textContent = `Error editing song: ${error.message}. Check console for details.`;
-                    } finally {
-                        hideLoading();
+                        document.getElementById("errorMessage").textContent = `Error editing song: ${error.message}. Check console or ensure the web app URL and permissions are correct.`;
                     }
                 }
             } else {
@@ -424,7 +379,6 @@
 
         // Helper function to fetch songs and return them
         async function fetchSongsAndReturn() {
-            showLoading();
             try {
                 const response = await fetch(GOOGLE_SHEETS_API);
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -432,8 +386,6 @@
             } catch (error) {
                 console.error("Error fetching songs:", error);
                 throw error;
-            } finally {
-                hideLoading();
             }
         }
 
