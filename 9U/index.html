@@ -32,8 +32,8 @@
         .sidebar {
             flex: 1;
             min-width: 300px;
-            background-color: white; /* White background for sidebar */
-            border: 2px solid #4E321E; /* Dark brown border */
+            background-color: white;
+            border: 2px solid #4E321E;
             border-radius: 8px;
             padding: 20px;
             margin-right: 20px;
@@ -44,17 +44,30 @@
             font-size: 1.5em;
         }
         .song-entry {
-            background-color: #F3BB21; /* Yellow background for each entry */
+            background-color: #F3BB21;
             border: 1px solid #4E321E;
             border-radius: 5px;
             padding: 10px;
             margin-bottom: 10px;
+            position: relative;
+        }
+        .song-entry button {
+            background-color: #4E321E;
+            color: #F3BB21;
+            border: none;
+            border-radius: 3px;
+            padding: 5px 10px;
+            margin-left: 5px;
+            cursor: pointer;
+        }
+        .song-entry button:hover {
+            background-color: #3a2415;
         }
         .form-container {
             flex: 2;
             min-width: 300px;
-            background-color: white; /* White background for form area */
-            border: 2px solid #4E321E; /* Dark brown border */
+            background-color: white;
+            border: 2px solid #4E321E;
             border-radius: 8px;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
@@ -73,8 +86,8 @@
             font-size: 1em;
         }
         button {
-            background-color: #4E321E; /* Dark brown button */
-            color: #F3BB21; /* Yellow text on button */
+            background-color: #4E321E;
+            color: #F3BB21;
             padding: 10px 20px;
             border: none;
             border-radius: 5px;
@@ -82,7 +95,22 @@
             cursor: pointer;
         }
         button:hover {
-            background-color: #3a2415; /* Slightly lighter brown on hover */
+            background-color: #3a2415;
+        }
+        #searchResults {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+        .search-result {
+            background-color: #F3BB21;
+            border: 1px solid #4E321E;
+            padding: 5px;
+            margin: 5px 0;
+            cursor: pointer;
+        }
+        .search-result:hover {
+            background-color: #e0a91e;
         }
     </style>
 </head>
@@ -102,8 +130,17 @@
         <!-- Form for Submitting Songs -->
         <div class="form-container">
             <h2>Pick Your Child's Walkout Song</h2>
-            <p>Enter the song details below to set your child's walkout song for their next game!</p>
+            <p>Search for a song, select it, and set the start time for your child's walkout song!</p>
 
+            <!-- Search for Songs -->
+            <label for="searchQuery">Search Song or Artist:</label>
+            <input type="text" id="searchQuery" placeholder="e.g., Sweet Caroline or Neil Diamond">
+            <button onclick="searchSongs()">Search</button>
+
+            <!-- Search Results -->
+            <div id="searchResults"></div>
+
+            <!-- Form for Song Details -->
             <form id="songForm" onsubmit="addSong(event)">
                 <label for="songName">Song Name:</label>
                 <input type="text" id="songName" name="songName" placeholder="e.g., Sweet Caroline" required>
@@ -114,7 +151,7 @@
                 <label for="startSecond">Start Second:</label>
                 <input type="number" id="startSecond" name="startSecond" min="0" placeholder="e.g., 30" required>
 
-                <button type="submit">Submit Song</button>
+                <button type="submit">Add Song</button>
             </form>
         </div>
     </div>
@@ -125,48 +162,135 @@
             displaySongs();
         });
 
-        function addSong(event) {
-            event.preventDefault(); // Prevent form submission from refreshing the page
+        // Search for songs using The AudioDB API
+        async function searchSongs() {
+            const query = document.getElementById("searchQuery").value;
+            if (!query) {
+                alert("Please enter a song or artist name to search.");
+                return;
+            }
 
-            // Get form values
+            const searchResults = document.getElementById("searchResults");
+            searchResults.innerHTML = "Searching...";
+
+            try {
+                // Search by track (song name)
+                const trackResponse = await fetch(`https://www.theaudiodb.com/api/v1/json/2/searchtrack.php?s=${encodeURIComponent(query)}&t=${encodeURIComponent(query)}`);
+                const trackData = await trackResponse.json();
+
+                // Search by artist as fallback
+                const artistResponse = await fetch(`https://www.theaudiodb.com/api/v1/json/2/search.php?s=${encodeURIComponent(query)}`);
+                const artistData = await artistResponse.json();
+
+                searchResults.innerHTML = "";
+                const tracks = [];
+
+                // Process track search results
+                if (trackData.track) {
+                    trackData.track.forEach(track => {
+                        tracks.push({
+                            songName: track.strTrack,
+                            artist: track.strArtist
+                        });
+                    });
+                }
+
+                // Process artist search results (get top tracks)
+                if (artistData.artists && artistData.artists.length > 0) {
+                    const artistId = artistData.artists[0].idArtist;
+                    const topTracksResponse = await fetch(`https://www.theaudiodb.com/api/v1/json/2/track-top10.php?s=${artistId}`);
+                    const topTracksData = await topTracksResponse.json();
+                    if (topTracksData.track) {
+                        topTracksData.track.forEach(track => {
+                            tracks.push({
+                                songName: track.strTrack,
+                                artist: track.strArtist
+                            });
+                        });
+                    }
+                }
+
+                // Display search results
+                if (tracks.length === 0) {
+                    searchResults.innerHTML = "<p>No songs found.</p>";
+                } else {
+                    tracks.forEach(track => {
+                        const resultDiv = document.createElement("div");
+                        resultDiv.className = "search-result";
+                        resultDiv.innerHTML = `${track.songName} by ${track.artist}`;
+                        resultDiv.onclick = () => {
+                            document.getElementById("songName").value = track.songName;
+                            document.getElementById("artist").value = track.artist;
+                            searchResults.innerHTML = ""; // Clear search results after selection
+                        };
+                        searchResults.appendChild(resultDiv);
+                    });
+                }
+            } catch (error) {
+                searchResults.innerHTML = "<p>Error searching for songs. Please try again.</p>";
+                console.error("Error:", error);
+            }
+        }
+
+        // Add a song to the list
+        function addSong(event) {
+            event.preventDefault();
+
             const songName = document.getElementById("songName").value;
             const artist = document.getElementById("artist").value;
             const startSecond = document.getElementById("startSecond").value;
 
-            // Create song object
             const song = {
                 name: songName,
                 artist: artist,
                 start: startSecond
             };
 
-            // Get existing songs from localStorage or initialize an empty array
             let songs = JSON.parse(localStorage.getItem("walkoutSongs")) || [];
-            songs.push(song); // Add the new song to the array
-            localStorage.setItem("walkoutSongs", JSON.stringify(songs)); // Save back to localStorage
+            songs.push(song);
+            localStorage.setItem("walkoutSongs", JSON.stringify(songs));
 
-            // Display the updated list
             displaySongs();
-
-            // Reset the form
             document.getElementById("songForm").reset();
         }
 
+        // Edit a song
+        function editSong(index) {
+            let songs = JSON.parse(localStorage.getItem("walkoutSongs")) || [];
+            const song = songs[index];
+
+            const newSongName = prompt("Edit Song Name:", song.name);
+            const newArtist = prompt("Edit Artist:", song.artist);
+            const newStart = prompt("Edit Start Second:", song.start);
+
+            if (newSongName && newArtist && newStart) {
+                songs[index] = {
+                    name: newSongName,
+                    artist: newArtist,
+                    start: newStart
+                };
+                localStorage.setItem("walkoutSongs", JSON.stringify(songs));
+                displaySongs();
+            }
+        }
+
+        // Display the song list
         function displaySongs() {
             const songList = document.getElementById("songList");
             const songs = JSON.parse(localStorage.getItem("walkoutSongs")) || [];
 
-            // Clear the current list
             songList.innerHTML = "";
-
-            // Display each song
             if (songs.length === 0) {
                 songList.innerHTML = "<p>No songs selected yet.</p>";
             } else {
-                songs.forEach(song => {
+                songs.forEach((song, index) => {
                     const songDiv = document.createElement("div");
                     songDiv.className = "song-entry";
-                    songDiv.innerHTML = `Song: "${song.name}" by ${song.artist}<br>Starting at: ${song.start} seconds`;
+                    songDiv.innerHTML = `Song: "${song.name}" by ${song.artist}<br>Starting at: ${song.start} seconds<br>`;
+                    const editButton = document.createElement("button");
+                    editButton.textContent = "Edit";
+                    editButton.onclick = () => editSong(index);
+                    songDiv.appendChild(editButton);
                     songList.appendChild(songDiv);
                 });
             }
