@@ -516,7 +516,7 @@
             const songList = document.getElementById("songList");
             songList.innerHTML = "";
             if (!songs || songs.length === 0) {
-                songList.innerHTML = "<p>No songs selected yet.</p>";
+                songList.innerHTML = "<p>No players entered yet.</p>";
             } else {
                 // Sort songs by battingOrder (ascending)
                 songs.sort((a, b) => parseInt(a.battingOrder) - parseInt(b.battingOrder));
