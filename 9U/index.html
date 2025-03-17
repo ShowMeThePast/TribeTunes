@@ -1,1 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kickapoo Tribe Baseball - Walkout Song Selector</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        header {
+            background-color: #2e7d32; /* Green to reflect a baseball field vibe */
+            color: white;
+            padding: 20px;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        select, button {
+            padding: 10px;
+            margin: 10px;
+            font-size: 1em;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #d32f2f; /* Red for a bold action button */
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #b71c1c;
+        }
+        .song-list {
+            margin: 20px 0;
+        }
+        .song-item {
+            margin: 10px 0;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Kickapoo Tribe Baseball</h1>
+        <p>Walkout Song Selector</p>
+    </header>
 
+    <div class="container">
+        <h2>Choose Your Walkout Song!</h2>
+        <p>Select a player and pick a song to get you pumped up as you step up to the plate!</p>
+
+        <!-- Player Selection -->
+        <label for="player">Select Player: </label>
+        <select id="player" name="player">
+            <option value="player1">Player 1 - John Doe</option>
+            <option value="player2">Player 2 - Jane Smith</option>
+            <option value="player3">Player 3 - Mike Johnson</option>
+            <option value="player4">Player 4 - Sarah Brown</option>
+        </select>
+
+        <!-- Song List with Audio Previews -->
+        <div class="song-list">
+            <h3>Song Options</h3>
+            <div class="song-item">
+                <p>"Sweet Caroline" by Neil Diamond</p>
+                <audio controls>
+                    <source src="placeholder-audio/sweet-caroline.mp3" type="audio/mp3">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+            <div class="song-item">
+                <p>"Thunderstruck" by AC/DC</p>
+                <audio controls>
+                    <source src="placeholder-audio/thunderstruck.mp3" type="audio/mp3">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+            <div class="song-item">
+                <p>"Sweet Home Alabama" by Lynyrd Skynyrd</p>
+                <audio controls>
+                    <source src="placeholder-audio/sweet-home-alabama.mp3" type="audio/mp3">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+            <div class="song-item">
+                <p>"Enter Sandman" by Metallica</p>
+                <audio controls>
+                    <source src="placeholder-audio/enter-sandman.mp3" type="audio/mp3">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+        </div>
+
+        <!-- Song Selection -->
+        <label for="song">Select Song: </label>
+        <select id="song" name="song">
+            <option value="Sweet Caroline">Sweet Caroline - Neil Diamond</option>
+            <option value="Thunderstruck">Thunderstruck - AC/DC</option>
+            <option value="Sweet Home Alabama">Sweet Home Alabama - Lynyrd Skynyrd</option>
+            <option value="Enter Sandman">Enter Sandman - Metallica</option>
+        </select>
+
+        <!-- Confirm Button -->
+        <button onclick="confirmSong()">Confirm Song</button>
+
+        <!-- Result Display -->
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function confirmSong() {
+            const player = document.getElementById("player").options[document.getElementById("player").selectedIndex].text;
+            const song = document.getElementById("song").value;
+            const resultDiv = document.getElementById("result");
+
+            resultDiv.innerHTML = `${player} will walk out to "${song}"! Let's get ready to hit a home run! ⚾`;
+        }
+    </script>
+</body>
+</html>
