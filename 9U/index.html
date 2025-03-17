@@ -101,10 +101,17 @@
         button:hover {
             background-color: #3a2415;
         }
-        .error-message {
+        .error-message, .info-box {
             color: #4E321E;
             font-weight: bold;
             margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #4E321E;
+            border-radius: 5px;
+        }
+        .info-box {
+            background-color: #fff;
+            font-style: italic;
         }
     </style>
 </head>
@@ -143,10 +150,22 @@
                 <button type="submit">Add Song</button>
             </form>
             <div id="errorMessage" class="error-message"></div>
+            <div class="info-box">
+                <p><strong>Input Rules:</strong></p>
+                <ul>
+                    <li>Child's Name, Song Name, and Artist must contain only letters (a-z, A-Z) and spaces.</li>
+                    <li>Start Second must contain only numbers (0-9).</li>
+                    <li>No special characters are allowed in any field.</li>
+                </ul>
+            </div>
+            <button id="adminButton" onclick="toggleAdminMode()">Admin</button>
         </div>
     </div>
 
     <script>
+        let isAdmin = false; // Admin mode flag
+        const SECRET_CODE = "kickapoo2025"; // Secret code to enable admin mode
+
         // Load songs from localStorage when the page loads
         document.addEventListener("DOMContentLoaded", () => {
             displaySongs();
@@ -168,9 +187,24 @@
             const artist = document.getElementById("artist").value.trim();
             const startSecond = document.getElementById("startSecond").value;
 
-            // Validate all fields are non-empty after trimming
-            if (!childName || !songName || !artist || !startSecond) {
-                document.getElementById("errorMessage").textContent = "All fields must be filled out with valid values.";
+            // Validation
+            const alphaRegex = /^[a-zA-Z\s]+$/; // Only letters and spaces
+            const numberRegex = /^[0-9]+$/;     // Only numbers
+
+            if (!alphaRegex.test(childName)) {
+                document.getElementById("errorMessage").textContent = "Child's Name must contain only letters and spaces.";
+                return;
+            }
+            if (!alphaRegex.test(songName)) {
+                document.getElementById("errorMessage").textContent = "Song Name must contain only letters and spaces.";
+                return;
+            }
+            if (!alphaRegex.test(artist)) {
+                document.getElementById("errorMessage").textContent = "Artist must contain only letters and spaces.";
+                return;
+            }
+            if (!numberRegex.test(startSecond)) {
+                document.getElementById("errorMessage").textContent = "Start Second must contain only numbers.";
                 return;
             }
 
@@ -193,21 +227,21 @@
         // Delete a song
         function deleteSong(index) {
             let songs = JSON.parse(localStorage.getItem("walkoutSongs")) || [];
-            if (songs[index].isValid) {
+            if (isAdmin || songs[index].isValid) {
                 if (confirm("Are you sure you want to delete this song?")) {
                     songs.splice(index, 1); // Remove the song at the specified index
                     localStorage.setItem("walkoutSongs", JSON.stringify(songs));
                     displaySongs();
                 }
             } else {
-                alert("This song cannot be deleted because it was not entered with all valid fields.");
+                alert("This song cannot be deleted because it was not entered with all valid fields. Admin access required.");
             }
         }
 
         // Edit a song
         function editSong(index) {
             let songs = JSON.parse(localStorage.getItem("walkoutSongs")) || [];
-            if (songs[index].isValid) {
+            if (isAdmin || songs[index].isValid) {
                 const song = songs[index];
 
                 const newChildName = prompt("Edit Child's Name:", song.childName);
@@ -215,7 +249,28 @@
                 const newArtist = prompt("Edit Artist:", song.artist);
                 const newStart = prompt("Edit Start Second:", song.start);
 
+                // Validation for edited values
+                const alphaRegex = /^[a-zA-Z\s]+$/;
+                const numberRegex = /^[0-9]+$/;
+
                 if (newChildName && newSongName && newArtist && newStart) {
+                    if (!alphaRegex.test(newChildName.trim())) {
+                        alert("Child's Name must contain only letters and spaces.");
+                        return;
+                    }
+                    if (!alphaRegex.test(newSongName.trim())) {
+                        alert("Song Name must contain only letters and spaces.");
+                        return;
+                    }
+                    if (!alphaRegex.test(newArtist.trim())) {
+                        alert("Artist must contain only letters and spaces.");
+                        return;
+                    }
+                    if (!numberRegex.test(newStart)) {
+                        alert("Start Second must contain only numbers.");
+                        return;
+                    }
+
                     songs[index] = {
                         childName: newChildName.trim(),
                         name: newSongName.trim(),
@@ -227,7 +282,7 @@
                     displaySongs();
                 }
             } else {
-                alert("This song cannot be edited because it was not entered with all valid fields.");
+                alert("This song cannot be edited because it was not entered with all valid fields. Admin access required.");
             }
         }
 
@@ -246,18 +301,30 @@
                     songDiv.innerHTML = `Child: ${song.childName}<br>Song: "${song.name}" by ${song.artist}<br>Starting at: ${song.start} seconds<br>`;
                     const editButton = document.createElement("button");
                     editButton.textContent = "Edit";
-                    editButton.disabled = !song.isValid; // Disable if not valid
+                    editButton.disabled = !isAdmin && !song.isValid; // Disable if not admin and not valid
                     editButton.onclick = () => editSong(index);
                     songDiv.appendChild(editButton);
 
                     const deleteButton = document.createElement("button");
                     deleteButton.textContent = "Delete";
-                    deleteButton.disabled = !song.isValid; // Disable if not valid
+                    deleteButton.disabled = !isAdmin && !song.isValid; // Disable if not admin and not valid
                     deleteButton.onclick = () => deleteSong(index);
                     songDiv.appendChild(deleteButton);
 
                     songList.appendChild(songDiv);
                 });
+            }
+        }
+
+        // Toggle admin mode
+        function toggleAdminMode() {
+            const code = prompt("Enter Admin Secret Code:");
+            if (code === SECRET_CODE) {
+                isAdmin = true;
+                alert("Admin mode enabled. You can now edit or delete all songs.");
+                displaySongs(); // Refresh to enable buttons
+            } else {
+                alert("Incorrect code. Admin mode not enabled.");
             }
         }
     </script>
