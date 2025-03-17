@@ -195,7 +195,7 @@
         const SECRET_CODE = "kickapoo2025";
         const TIMEOUT = 60 * 1000;
         let lastAdditionTime = null;
-        const GOOGLE_SHEETS_API = "https://script.google.com/macros/s/AKfycbzI1R9BhbZePy5FTkgjKnvhLavMFMvX8LQc2x6aBBJrqCDp0wqa-LPx69cJCzR4EQ9Y/exec"; // Replace with the new production web app URL
+        const GOOGLE_SHEETS_API = "https://script.google.com/macros/s/AKfycbxCxwgkrR-BqTm0JOqra3C3ickka_Z2226Q-twnrgirgD9DZAPj3EbXOFp0TxLQmJWa/exec";
 
         // Load songs from Google Sheets when the page loads
         document.addEventListener("DOMContentLoaded", () => {
@@ -272,15 +272,19 @@
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ action: "add", song: song }),
-                    mode: 'cors'
+                    mode: 'cors',
+                    redirect: 'follow'
                 });
                 if (!response.ok) {
                     const errorText = await response.text();
                     throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
                 }
-                const updatedSongs = await response.json();
+                const data = await response.json();
+                if (data.error) {
+                    throw new Error(`Server error: ${data.error}`);
+                }
                 lastAdditionTime = new Date().getTime();
-                displaySongs(updatedSongs);
+                displaySongs(data);
                 document.getElementById("songForm").reset();
                 document.getElementById("errorMessage").textContent = "";
             } catch (error) {
@@ -302,13 +306,17 @@
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({ action: "delete", index: index }),
-                            mode: 'cors'
+                            mode: 'cors',
+                            redirect: 'follow'
                         });
                         if (!response.ok) {
                             const errorText = await response.text();
                             throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
                         }
                         const updatedSongs = await response.json();
+                        if (updatedSongs.error) {
+                            throw new Error(`Server error: ${updatedSongs.error}`);
+                        }
                         displaySongs(updatedSongs);
                     } catch (error) {
                         console.error("Error deleting song:", error);
@@ -373,13 +381,17 @@
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({ action: "edit", index: index, song: updatedSong }),
-                            mode: 'cors'
+                            mode: 'cors',
+                            redirect: 'follow'
                         });
                         if (!response.ok) {
                             const errorText = await response.text();
                             throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
                         }
                         const updatedSongs = await response.json();
+                        if (updatedSongs.error) {
+                            throw new Error(`Server error: ${updatedSongs.error}`);
+                        }
                         lastAdditionTime = currentTime;
                         displaySongs(updatedSongs);
                     } catch (error) {
@@ -400,7 +412,11 @@
                     const errorText = await response.text();
                     throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
                 }
-                return await response.json();
+                const data = await response.json();
+                if (data.error) {
+                    throw new Error(`Server error: ${data.error}`);
+                }
+                return data;
             } catch (error) {
                 console.error("Error fetching songs:", error);
                 throw error;
