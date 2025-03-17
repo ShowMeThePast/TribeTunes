@@ -97,20 +97,10 @@
         button:hover {
             background-color: #3a2415;
         }
-        #searchResults {
-            max-height: 200px;
-            overflow-y: auto;
-            margin-bottom: 15px;
-        }
-        .search-result {
-            background-color: #F3BB21;
-            border: 1px solid #4E321E;
-            padding: 5px;
-            margin: 5px 0;
-            cursor: pointer;
-        }
-        .search-result:hover {
-            background-color: #e0a91e;
+        .error-message {
+            color: #4E321E;
+            font-weight: bold;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -130,18 +120,13 @@
         <!-- Form for Submitting Songs -->
         <div class="form-container">
             <h2>Pick Your Child's Walkout Song</h2>
-            <p>Search for a song, select it, and set the start time for your child's walkout song!</p>
-
-            <!-- Search for Songs -->
-            <label for="searchQuery">Search Song or Artist:</label>
-            <input type="text" id="searchQuery" placeholder="e.g., Sweet Caroline or Neil Diamond">
-            <button onclick="searchSongs()">Search</button>
-
-            <!-- Search Results -->
-            <div id="searchResults"></div>
+            <p>Enter the song details below to set your child's walkout song for their next game!</p>
 
             <!-- Form for Song Details -->
             <form id="songForm" onsubmit="addSong(event)">
+                <label for="childName">Child's Name:</label>
+                <input type="text" id="childName" name="childName" placeholder="e.g., Alex Smith" required>
+
                 <label for="songName">Song Name:</label>
                 <input type="text" id="songName" name="songName" placeholder="e.g., Sweet Caroline" required>
 
@@ -153,6 +138,7 @@
 
                 <button type="submit">Add Song</button>
             </form>
+            <div id="errorMessage" class="error-message"></div>
         </div>
     </div>
 
@@ -162,96 +148,35 @@
             displaySongs();
         });
 
-        // Search for songs using The AudioDB API
-        async function searchSongs() {
-            const query = document.getElementById("searchQuery").value;
-            if (!query) {
-                alert("Please enter a song or artist name to search.");
-                return;
-            }
-
-            const searchResults = document.getElementById("searchResults");
-            searchResults.innerHTML = "Searching...";
-
-            try {
-                // Search by track (song name)
-                const trackResponse = await fetch(`https://www.theaudiodb.com/api/v1/json/2/searchtrack.php?s=${encodeURIComponent(query)}&t=${encodeURIComponent(query)}`);
-                const trackData = await trackResponse.json();
-
-                // Search by artist as fallback
-                const artistResponse = await fetch(`https://www.theaudiodb.com/api/v1/json/2/search.php?s=${encodeURIComponent(query)}`);
-                const artistData = await artistResponse.json();
-
-                searchResults.innerHTML = "";
-                const tracks = [];
-
-                // Process track search results
-                if (trackData.track) {
-                    trackData.track.forEach(track => {
-                        tracks.push({
-                            songName: track.strTrack,
-                            artist: track.strArtist
-                        });
-                    });
-                }
-
-                // Process artist search results (get top tracks)
-                if (artistData.artists && artistData.artists.length > 0) {
-                    const artistId = artistData.artists[0].idArtist;
-                    const topTracksResponse = await fetch(`https://www.theaudiodb.com/api/v1/json/2/track-top10.php?s=${artistId}`);
-                    const topTracksData = await topTracksResponse.json();
-                    if (topTracksData.track) {
-                        topTracksData.track.forEach(track => {
-                            tracks.push({
-                                songName: track.strTrack,
-                                artist: track.strArtist
-                            });
-                        });
-                    }
-                }
-
-                // Display search results
-                if (tracks.length === 0) {
-                    searchResults.innerHTML = "<p>No songs found.</p>";
-                } else {
-                    tracks.forEach(track => {
-                        const resultDiv = document.createElement("div");
-                        resultDiv.className = "search-result";
-                        resultDiv.innerHTML = `${track.songName} by ${track.artist}`;
-                        resultDiv.onclick = () => {
-                            document.getElementById("songName").value = track.songName;
-                            document.getElementById("artist").value = track.artist;
-                            searchResults.innerHTML = ""; // Clear search results after selection
-                        };
-                        searchResults.appendChild(resultDiv);
-                    });
-                }
-            } catch (error) {
-                searchResults.innerHTML = "<p>Error searching for songs. Please try again.</p>";
-                console.error("Error:", error);
-            }
-        }
-
         // Add a song to the list
         function addSong(event) {
             event.preventDefault();
 
+            // Check if the song list has reached the limit
+            let songs = JSON.parse(localStorage.getItem("walkoutSongs")) || [];
+            if (songs.length >= 24) {
+                document.getElementById("errorMessage").textContent = "Song limit reached (24 songs). Please edit or remove a song to add a new one.";
+                return;
+            }
+
+            const childName = document.getElementById("childName").value;
             const songName = document.getElementById("songName").value;
             const artist = document.getElementById("artist").value;
             const startSecond = document.getElementById("startSecond").value;
 
             const song = {
+                childName: childName,
                 name: songName,
                 artist: artist,
                 start: startSecond
             };
 
-            let songs = JSON.parse(localStorage.getItem("walkoutSongs")) || [];
             songs.push(song);
             localStorage.setItem("walkoutSongs", JSON.stringify(songs));
 
             displaySongs();
             document.getElementById("songForm").reset();
+            document.getElementById("errorMessage").textContent = ""; // Clear error message on successful add
         }
 
         // Edit a song
@@ -259,12 +184,14 @@
             let songs = JSON.parse(localStorage.getItem("walkoutSongs")) || [];
             const song = songs[index];
 
+            const newChildName = prompt("Edit Child's Name:", song.childName);
             const newSongName = prompt("Edit Song Name:", song.name);
             const newArtist = prompt("Edit Artist:", song.artist);
             const newStart = prompt("Edit Start Second:", song.start);
 
-            if (newSongName && newArtist && newStart) {
+            if (newChildName && newSongName && newArtist && newStart) {
                 songs[index] = {
+                    childName: newChildName,
                     name: newSongName,
                     artist: newArtist,
                     start: newStart
@@ -286,7 +213,7 @@
                 songs.forEach((song, index) => {
                     const songDiv = document.createElement("div");
                     songDiv.className = "song-entry";
-                    songDiv.innerHTML = `Song: "${song.name}" by ${song.artist}<br>Starting at: ${song.start} seconds<br>`;
+                    songDiv.innerHTML = `Child: ${song.childName}<br>Song: "${song.name}" by ${song.artist}<br>Starting at: ${song.start} seconds<br>`;
                     const editButton = document.createElement("button");
                     editButton.textContent = "Edit";
                     editButton.onclick = () => editSong(index);
