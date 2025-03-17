@@ -38,14 +38,14 @@
             padding: 20px;
             margin-right: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            position: relative; /* For positioning the admin button */
+            position: relative;
         }
         .sidebar h2 {
             margin-top: 0;
             font-size: 1.5em;
         }
         .song-list-container {
-            min-height: 100px; /* Ensure space for songs */
+            min-height: 100px;
         }
         .song-entry {
             background-color: #F3BB21;
@@ -69,7 +69,7 @@
             background-color: #3a2415;
         }
         .song-entry button:disabled {
-            background-color: #a0a0a0; /* Grayed out when disabled */
+            background-color: #a0a0a0;
             cursor: not-allowed;
         }
         .admin-button {
@@ -81,10 +81,10 @@
             font-size: 0.8em;
             cursor: pointer;
             margin-top: 10px;
-            display: block; /* Ensure it’s always visible as a block element */
+            display: block;
             position: absolute;
             bottom: 20px;
-            width: calc(100% - 40px); /* Adjust width to fit within padding */
+            width: calc(100% - 40px);
         }
         .admin-button:hover {
             background-color: #3a2415;
@@ -190,24 +190,35 @@
     </div>
 
     <script>
-        let isAdmin = false; // Admin mode flag
-        const SECRET_CODE = "kickapoo2025"; // Secret code to enable admin mode
-        const TIMEOUT = 60 * 1000; // 60 seconds in milliseconds for both edit and delete
-        let lastAdditionTime = null; // Global timestamp for the last addition
+        let isAdmin = false;
+        const SECRET_CODE = "kickapoo2025";
+        const TIMEOUT = 60 * 1000;
+        let lastAdditionTime = null;
+        const GOOGLE_SHEETS_API = "[YOUR_WEB_APP_URL]"; // Replace with your Google Apps Script web app URL
 
-        // Load songs from localStorage when the page loads
+        // Load songs from Google Sheets when the page loads
         document.addEventListener("DOMContentLoaded", () => {
-            displaySongs();
-            // Start checking timers periodically
-            setInterval(checkTimers, 1000); // Check every second
+            fetchSongs();
+            setInterval(checkTimers, 1000);
         });
 
-        // Add a song to the list
-        function addSong(event) {
+        // Fetch songs from Google Sheets
+        async function fetchSongs() {
+            try {
+                const response = await fetch(GOOGLE_SHEETS_API);
+                const songs = await response.json();
+                displaySongs(songs);
+            } catch (error) {
+                console.error("Error fetching songs:", error);
+                document.getElementById("songList").innerHTML = "<p>Error loading songs. Please try again later.</p>";
+            }
+        }
+
+        // Add a song to Google Sheets
+        async function addSong(event) {
             event.preventDefault();
 
-            // Check if the song list has reached the limit
-            let songs = JSON.parse(localStorage.getItem("walkoutSongs")) || [];
+            const songs = await fetchSongsAndReturn();
             if (songs.length >= 24) {
                 document.getElementById("errorMessage").textContent = "Song limit reached (24 songs). Please delete a song to add a new one.";
                 return;
@@ -219,9 +230,8 @@
             const artist = document.getElementById("artist").value.trim();
             const startSecond = document.getElementById("startSecond").value;
 
-            // Validation
-            const alphaRegex = /^[a-zA-Z\s]+$/; // Only letters and spaces
-            const numberRegex = /^[0-9]+$/;     // Only numbers
+            const alphaRegex = /^[a-zA-Z\s]+$/;
+            const numberRegex = /^[0-9]+$/;
 
             if (!alphaRegex.test(childName)) {
                 document.getElementById("errorMessage").textContent = "Child's Name must contain only letters and spaces.";
@@ -249,43 +259,57 @@
                 childNumber: childNumber,
                 name: songName,
                 artist: artist,
-                start: startSecond,
-                isValid: true // Flag to indicate the entry is fully valid
+                start: startSecond
             };
 
-            songs.push(song);
-            localStorage.setItem("walkoutSongs", JSON.stringify(songs));
-            lastAdditionTime = new Date().getTime(); // Set the last addition time
-
-            displaySongs();
-            document.getElementById("songForm").reset();
-            document.getElementById("errorMessage").textContent = ""; // Clear error message on successful add
+            try {
+                await fetch(GOOGLE_SHEETS_API, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ action: "add", song: song })
+                });
+                lastAdditionTime = new Date().getTime();
+                fetchSongs();
+                document.getElementById("songForm").reset();
+                document.getElementById("errorMessage").textContent = "";
+            } catch (error) {
+                console.error("Error adding song:", error);
+                document.getElementById("errorMessage").textContent = "Error adding song. Please try again.";
+            }
         }
 
-        // Delete a song
-        function deleteSong(index) {
-            let songs = JSON.parse(localStorage.getItem("walkoutSongs")) || [];
+        // Delete a song from Google Sheets
+        async function deleteSong(index) {
+            const songs = await fetchSongsAndReturn();
             const currentTime = new Date().getTime();
             const timeElapsed = currentTime - (lastAdditionTime || currentTime);
 
-            if (isAdmin || (songs[index].isValid && timeElapsed <= TIMEOUT)) {
+            if (isAdmin || (timeElapsed <= TIMEOUT)) {
                 if (confirm("Are you sure you want to delete this song?")) {
-                    songs.splice(index, 1); // Remove the song at the specified index
-                    localStorage.setItem("walkoutSongs", JSON.stringify(songs));
-                    displaySongs();
+                    try {
+                        await fetch(GOOGLE_SHEETS_API, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ action: "delete", index: index })
+                        });
+                        fetchSongs();
+                    } catch (error) {
+                        console.error("Error deleting song:", error);
+                        document.getElementById("errorMessage").textContent = "Error deleting song. Please try again.";
+                    }
                 }
             } else {
                 alert("The list is locked. You must enter admin mode to delete after 60 seconds from the last addition.");
             }
         }
 
-        // Edit a song
-        function editSong(index) {
-            let songs = JSON.parse(localStorage.getItem("walkoutSongs")) || [];
+        // Edit a song in Google Sheets
+        async function editSong(index) {
+            const songs = await fetchSongsAndReturn();
             const currentTime = new Date().getTime();
             const timeElapsed = currentTime - (lastAdditionTime || currentTime);
 
-            if (isAdmin || (songs[index].isValid && timeElapsed <= TIMEOUT)) {
+            if (isAdmin || (timeElapsed <= TIMEOUT)) {
                 const song = songs[index];
 
                 const newChildName = prompt("Edit Child's Name:", song.childName);
@@ -294,7 +318,6 @@
                 const newArtist = prompt("Edit Artist:", song.artist);
                 const newStart = prompt("Edit Start Second:", song.start);
 
-                // Validation for edited values
                 const alphaRegex = /^[a-zA-Z\s]+$/;
                 const numberRegex = /^[0-9]+$/;
 
@@ -320,28 +343,41 @@
                         return;
                     }
 
-                    songs[index] = {
+                    const updatedSong = {
                         childName: newChildName.trim(),
                         childNumber: newChildNumber,
                         name: newSongName.trim(),
                         artist: newArtist.trim(),
-                        start: newStart,
-                        isValid: true
+                        start: newStart
                     };
-                    localStorage.setItem("walkoutSongs", JSON.stringify(songs));
-                    lastAdditionTime = currentTime; // Reset the timer on successful edit
-                    displaySongs();
+
+                    try {
+                        await fetch(GOOGLE_SHEETS_API, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ action: "edit", index: index, song: updatedSong })
+                        });
+                        lastAdditionTime = currentTime;
+                        fetchSongs();
+                    } catch (error) {
+                        console.error("Error editing song:", error);
+                        document.getElementById("errorMessage").textContent = "Error editing song. Please try again.";
+                    }
                 }
             } else {
                 alert("The list is locked. You must enter admin mode to edit after 60 seconds from the last addition.");
             }
         }
 
-        // Display the song list
-        function displaySongs() {
-            const songList = document.getElementById("songList");
-            const songs = JSON.parse(localStorage.getItem("walkoutSongs")) || [];
+        // Helper function to fetch songs and return them
+        async function fetchSongsAndReturn() {
+            const response = await fetch(GOOGLE_SHEETS_API);
+            return await response.json();
+        }
 
+        // Display the song list
+        function displaySongs(songs) {
+            const songList = document.getElementById("songList");
             songList.innerHTML = "";
             if (songs.length === 0) {
                 songList.innerHTML = "<p>No songs selected yet.</p>";
@@ -353,34 +389,25 @@
                     const editButton = document.createElement("button");
                     editButton.textContent = "Edit";
                     const currentTime = new Date().getTime();
-                    const timeElapsed = currentTime - (lastAdditionTime || currentTime); // Use current time if no addition yet
-                    editButton.disabled = !isAdmin && (timeElapsed > TIMEOUT || !song.isValid); // Disable if past 60 seconds, not admin, or not valid
+                    const timeElapsed = currentTime - (lastAdditionTime || currentTime);
+                    editButton.disabled = !isAdmin && (timeElapsed > TIMEOUT);
                     editButton.onclick = () => editSong(index);
                     songDiv.appendChild(editButton);
 
                     const deleteButton = document.createElement("button");
                     deleteButton.textContent = "Delete";
-                    deleteButton.disabled = !isAdmin && (timeElapsed > TIMEOUT || !song.isValid); // Disable if past 60 seconds, not admin, or not valid
+                    deleteButton.disabled = !isAdmin && (timeElapsed > TIMEOUT);
                     deleteButton.onclick = () => deleteSong(index);
                     songDiv.appendChild(deleteButton);
 
                     songList.appendChild(songDiv);
                 });
             }
-            // Ensure the admin button is always present and at the bottom
-            const adminButton = document.getElementById("adminButton");
-            const sidebar = document.querySelector(".sidebar");
-            if (adminButton.parentNode !== sidebar) {
-                sidebar.appendChild(adminButton); // Move to sidebar if not already there
-            }
-            adminButton.style.position = "absolute";
-            adminButton.style.bottom = "20px";
-            adminButton.style.width = "calc(100% - 40px)"; // Adjust for padding
         }
 
         // Check timers periodically
         function checkTimers() {
-            displaySongs(); // Refresh the display to update button states
+            fetchSongs();
         }
 
         // Toggle admin mode
@@ -389,7 +416,7 @@
             if (code === SECRET_CODE) {
                 isAdmin = true;
                 alert("Admin mode enabled. You can now edit or delete all songs.");
-                displaySongs(); // Refresh to enable buttons
+                fetchSongs();
             } else {
                 alert("Incorrect answer. Admin mode not enabled.");
             }
