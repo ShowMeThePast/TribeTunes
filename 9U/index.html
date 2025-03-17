@@ -195,7 +195,7 @@
         const SECRET_CODE = "kickapoo2025";
         const TIMEOUT = 60 * 1000;
         let lastAdditionTime = null;
-        const GOOGLE_SHEETS_API = "https://script.google.com/macros/s/AKfycbxK7tApb4dq_ZbuOwnCwdkPYWclo6EMkdVTq_T5tQxjOjytN84lbeH6duTfbzRv8wes/exec"; // Replace with the new production web app URL
+        const GOOGLE_SHEETS_API = "https://script.google.com/macros/s/AKfycbxK7tApb4dq_ZbuOwnCwdkPYWclo6EMkdVTq_T5tQxjOjytN84lbeH6duTfbzRv8wes/exec";
 
         // Load songs from Google Sheets when the page loads
         document.addEventListener("DOMContentLoaded", () => {
@@ -208,7 +208,8 @@
             try {
                 const response = await fetch(GOOGLE_SHEETS_API);
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
+                    const errorText = await response.text();
+                    throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
                 }
                 const songs = await response.json();
                 displaySongs(songs);
@@ -376,7 +377,7 @@
                             throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
                         }
                         const updatedSongs = await response.json();
-                        lastAdditionTime = currentTime;
+                        lastAdditionTime = new Date().getTime();
                         displaySongs(updatedSongs);
                     } catch (error) {
                         console.error("Error editing song:", error);
