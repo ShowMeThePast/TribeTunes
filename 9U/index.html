@@ -138,6 +138,9 @@
                 <label for="childName">Child's Name:</label>
                 <input type="text" id="childName" name="childName" placeholder="e.g., Alex Smith" required>
 
+                <label for="childNumber">Child's Number:</label>
+                <input type="number" id="childNumber" name="childNumber" min="0" placeholder="e.g., 12" required>
+
                 <label for="songName">Song Name:</label>
                 <input type="text" id="songName" name="songName" placeholder="e.g., Sweet Caroline" required>
 
@@ -154,17 +157,17 @@
                 <p><strong>Input Rules:</strong></p>
                 <ul>
                     <li>Child's Name, Song Name, and Artist must contain only letters (a-z, A-Z) and spaces.</li>
-                    <li>Start Second must contain only numbers (0-9).</li>
+                    <li>Child's Number and Start Second must contain only numbers (0-9).</li>
                     <li>No special characters are allowed in any field.</li>
                 </ul>
             </div>
-            <button id="adminButton" onclick="toggleAdminMode()">Admin</button>
+            <button id="adminButton" onclick="toggleAdminMode()">26</button>
         </div>
     </div>
 
     <script>
         let isAdmin = false; // Admin mode flag
-        const SECRET_CODE = "woods26"; // Secret code to enable admin mode
+        const SECRET_CODE = "kickapoo2025"; // Secret code to enable admin mode
 
         // Load songs from localStorage when the page loads
         document.addEventListener("DOMContentLoaded", () => {
@@ -183,6 +186,7 @@
             }
 
             const childName = document.getElementById("childName").value.trim();
+            const childNumber = document.getElementById("childNumber").value;
             const songName = document.getElementById("songName").value.trim();
             const artist = document.getElementById("artist").value.trim();
             const startSecond = document.getElementById("startSecond").value;
@@ -193,6 +197,10 @@
 
             if (!alphaRegex.test(childName)) {
                 document.getElementById("errorMessage").textContent = "Child's Name must contain only letters and spaces.";
+                return;
+            }
+            if (!numberRegex.test(childNumber)) {
+                document.getElementById("errorMessage").textContent = "Child's Number must contain only numbers.";
                 return;
             }
             if (!alphaRegex.test(songName)) {
@@ -210,6 +218,7 @@
 
             const song = {
                 childName: childName,
+                childNumber: childNumber,
                 name: songName,
                 artist: artist,
                 start: startSecond,
@@ -245,6 +254,7 @@
                 const song = songs[index];
 
                 const newChildName = prompt("Edit Child's Name:", song.childName);
+                const newChildNumber = prompt("Edit Child's Number:", song.childNumber);
                 const newSongName = prompt("Edit Song Name:", song.name);
                 const newArtist = prompt("Edit Artist:", song.artist);
                 const newStart = prompt("Edit Start Second:", song.start);
@@ -253,9 +263,13 @@
                 const alphaRegex = /^[a-zA-Z\s]+$/;
                 const numberRegex = /^[0-9]+$/;
 
-                if (newChildName && newSongName && newArtist && newStart) {
+                if (newChildName && newChildNumber && newSongName && newArtist && newStart) {
                     if (!alphaRegex.test(newChildName.trim())) {
                         alert("Child's Name must contain only letters and spaces.");
+                        return;
+                    }
+                    if (!numberRegex.test(newChildNumber)) {
+                        alert("Child's Number must contain only numbers.");
                         return;
                     }
                     if (!alphaRegex.test(newSongName.trim())) {
@@ -273,6 +287,7 @@
 
                     songs[index] = {
                         childName: newChildName.trim(),
+                        childNumber: newChildNumber,
                         name: newSongName.trim(),
                         artist: newArtist.trim(),
                         start: newStart,
@@ -298,7 +313,7 @@
                 songs.forEach((song, index) => {
                     const songDiv = document.createElement("div");
                     songDiv.className = "song-entry";
-                    songDiv.innerHTML = `Child: ${song.childName}<br>Song: "${song.name}" by ${song.artist}<br>Starting at: ${song.start} seconds<br>`;
+                    songDiv.innerHTML = `Child: ${song.childName} (#${song.childNumber})<br>Song: "${song.name}" by ${song.artist}<br>Starting at: ${song.start} seconds<br>`;
                     const editButton = document.createElement("button");
                     editButton.textContent = "Edit";
                     editButton.disabled = !isAdmin && !song.isValid; // Disable if not admin and not valid
@@ -318,13 +333,13 @@
 
         // Toggle admin mode
         function toggleAdminMode() {
-            const code = prompt("Enter Admin Secret Code:");
+            const code = prompt("What Is the Airspeed Velocity of an Unladen Swallow?");
             if (code === SECRET_CODE) {
                 isAdmin = true;
                 alert("Admin mode enabled. You can now edit or delete all songs.");
                 displaySongs(); // Refresh to enable buttons
             } else {
-                alert("Incorrect code. Admin mode not enabled.");
+                alert("Incorrect answer. Admin mode not enabled.");
             }
         }
     </script>
