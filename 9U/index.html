@@ -135,7 +135,6 @@
             background-color: #fff;
             font-style: italic;
         }
-        /* Loading Indicator Styles */
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -226,10 +225,7 @@
         const SECRET_CODE = "kickapoo2025";
         const TIMEOUT = 60 * 1000;
         let lastAdditionTime = null;
-        const REPO_OWNER = "[YOUR_USERNAME]";
-        const REPO_NAME = "[YOUR_REPOSITORY]";
-        let GITHUB_TOKEN = "[YOUR_PERSONAL_ACCESS_TOKEN]"; // Admin should input this
-        const SONGS_FILE = "songs.json";
+        const GOOGLE_SHEETS_API = "[YOUR_WEB_APP_URL]"; // Replace with your Google Apps Script web app URL
 
         // Loading indicator functions
         function showLoading() {
@@ -240,28 +236,29 @@
             document.getElementById("loadingOverlay").style.visibility = "hidden";
         }
 
-        // Load songs from GitHub when the page loads
+        // Load songs from Google Sheets when the page loads
         document.addEventListener("DOMContentLoaded", () => {
             fetchSongs();
             setInterval(checkTimers, 1000);
         });
 
-        // Fetch songs from GitHub
+        // Fetch songs from Google Sheets
         async function fetchSongs() {
             showLoading();
             try {
-                const response = await fetch(`https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${SONGS_FILE}`);
+                const response = await fetch(GOOGLE_SHEETS_API);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const songs = await response.json();
                 displaySongs(songs);
             } catch (error) {
                 console.error("Error fetching songs:", error);
-                document.getElementById("songList").innerHTML = "<p>Error loading songs. Please try again later.</p>";
+                document.getElementById("songList").innerHTML = "<p>Error loading songs. Check console for details.</p>";
             } finally {
                 hideLoading();
             }
         }
 
-        // Add a song to GitHub
+        // Add a song to Google Sheets
         async function addSong(event) {
             event.preventDefault();
 
@@ -311,22 +308,24 @@
 
             try {
                 showLoading();
-                const songs = await fetchSongsAndReturn();
-                songs.push(song);
-                await updateSongsFile(songs);
+                await fetch(GOOGLE_SHEETS_API, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ action: "add", song: song })
+                });
                 lastAdditionTime = new Date().getTime();
                 fetchSongs();
                 document.getElementById("songForm").reset();
                 document.getElementById("errorMessage").textContent = "";
             } catch (error) {
                 console.error("Error adding song:", error);
-                document.getElementById("errorMessage").textContent = "Error adding song. Please ensure you have admin access or try again.";
+                document.getElementById("errorMessage").textContent = `Error adding song: ${error.message}. Check console for details.`;
             } finally {
                 hideLoading();
             }
         }
 
-        // Delete a song from GitHub
+        // Delete a song from Google Sheets
         async function deleteSong(index) {
             const songs = await fetchSongsAndReturn();
             const currentTime = new Date().getTime();
@@ -336,12 +335,15 @@
                 if (confirm("Are you sure you want to delete this song?")) {
                     try {
                         showLoading();
-                        songs.splice(index, 1);
-                        await updateSongsFile(songs);
+                        await fetch(GOOGLE_SHEETS_API, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ action: "delete", index: index })
+                        });
                         fetchSongs();
                     } catch (error) {
                         console.error("Error deleting song:", error);
-                        document.getElementById("errorMessage").textContent = "Error deleting song. Please ensure you have admin access or try again.";
+                        document.getElementById("errorMessage").textContent = `Error deleting song: ${error.message}. Check console for details.`;
                     } finally {
                         hideLoading();
                     }
@@ -351,7 +353,7 @@
             }
         }
 
-        // Edit a song in GitHub
+        // Edit a song in Google Sheets
         async function editSong(index) {
             const songs = await fetchSongsAndReturn();
             const currentTime = new Date().getTime();
@@ -401,13 +403,16 @@
 
                     try {
                         showLoading();
-                        songs[index] = updatedSong;
-                        await updateSongsFile(songs);
+                        await fetch(GOOGLE_SHEETS_API, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ action: "edit", index: index, song: updatedSong })
+                        });
                         lastAdditionTime = currentTime;
                         fetchSongs();
                     } catch (error) {
                         console.error("Error editing song:", error);
-                        document.getElementById("errorMessage").textContent = "Error editing song. Please ensure you have admin access or try again.";
+                        document.getElementById("errorMessage").textContent = `Error editing song: ${error.message}. Check console for details.`;
                     } finally {
                         hideLoading();
                     }
@@ -419,39 +424,24 @@
 
         // Helper function to fetch songs and return them
         async function fetchSongsAndReturn() {
-            const response = await fetch(`https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${SONGS_FILE}`);
-            return await response.json();
-        }
-
-        // Update the songs.json file on GitHub
-        async function updateSongsFile(songs) {
-            const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${SONGS_FILE}`;
-            const response = await fetch(url);
-            const data = await response.json();
-            const sha = data.sha;
-
-            const payload = {
-                message: "Update song list",
-                content: btoa(JSON.stringify(songs, null, 2)),
-                sha: sha,
-                branch: "main"
-            };
-
-            await fetch(url, {
-                method: "PUT",
-                headers: {
-                    Authorization: `token ${GITHUB_TOKEN}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(payload)
-            });
+            showLoading();
+            try {
+                const response = await fetch(GOOGLE_SHEETS_API);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return await response.json();
+            } catch (error) {
+                console.error("Error fetching songs:", error);
+                throw error;
+            } finally {
+                hideLoading();
+            }
         }
 
         // Display the song list
         function displaySongs(songs) {
             const songList = document.getElementById("songList");
             songList.innerHTML = "";
-            if (songs.length === 0) {
+            if (!songs || songs.length === 0) {
                 songList.innerHTML = "<p>No songs selected yet.</p>";
             } else {
                 songs.forEach((song, index) => {
@@ -487,16 +477,6 @@
             const code = prompt("What Is the Airspeed Velocity of an Unladen Swallow?");
             if (code === SECRET_CODE) {
                 isAdmin = true;
-                if (!GITHUB_TOKEN || GITHUB_TOKEN === "[YOUR_PERSONAL_ACCESS_TOKEN]") {
-                    const token = prompt("Please enter your GitHub Personal Access Token:");
-                    if (token) {
-                        GITHUB_TOKEN = token;
-                    } else {
-                        alert("Admin mode requires a GitHub token. Please provide one.");
-                        isAdmin = false;
-                        return;
-                    }
-                }
                 alert("Admin mode enabled. You can now edit or delete all songs.");
                 fetchSongs();
             } else {
