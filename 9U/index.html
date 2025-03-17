@@ -183,13 +183,14 @@
         let isAdmin = false; // Admin mode flag
         const SECRET_CODE = "kickapoo2025"; // Secret code to enable admin mode
         const EDIT_TIMEOUT = 60 * 1000; // 60 seconds in milliseconds
+        const DELETE_TIMEOUT = 30 * 1000; // 30 seconds in milliseconds
         let lastAdditionTime = null; // Global timestamp for the last addition
 
         // Load songs from localStorage when the page loads
         document.addEventListener("DOMContentLoaded", () => {
             displaySongs();
-            // Start checking edit timers periodically
-            setInterval(checkEditTimers, 1000); // Check every second
+            // Start checking timers periodically
+            setInterval(checkTimers, 1000); // Check every second
         });
 
         // Add a song to the list
@@ -347,22 +348,22 @@
 
                     const deleteButton = document.createElement("button");
                     deleteButton.textContent = "Delete";
-                    deleteButton.disabled = !isAdmin && !song.isValid; // Disable if not admin and not valid
+                    deleteButton.disabled = !isAdmin && (timeElapsed > DELETE_TIMEOUT || !song.isValid); // Disable if past 30 seconds, not admin, or not valid
                     deleteButton.onclick = () => deleteSong(index);
                     songDiv.appendChild(deleteButton);
 
                     songList.appendChild(songDiv);
                 });
             }
-            // Ensure the admin button is at the bottom
+            // Ensure the admin button is at the bottom and always accessible
             const adminButton = document.getElementById("adminButton");
             if (adminButton.parentNode !== songList) {
                 songList.appendChild(adminButton);
             }
         }
 
-        // Check edit timers periodically
-        function checkEditTimers() {
+        // Check timers periodically
+        function checkTimers() {
             displaySongs(); // Refresh the display to update button states
         }
 
