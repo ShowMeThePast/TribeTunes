@@ -3,18 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kickapoo Tribe Baseball - Walkout Song Selector</title>
+    <title>Kickapoo Tribe Baseball - Walkout Song Picker</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background-color: #F3BB21; /* Bright yellow background */
+            color: #4E321E; /* Dark brown text */
             margin: 0;
             padding: 0;
             text-align: center;
         }
         header {
-            background-color: #2e7d32; /* Green to reflect a baseball field vibe */
-            color: white;
+            background-color: #4E321E; /* Dark brown header */
+            color: #F3BB21; /* Yellow text in header */
             padding: 20px;
         }
         header h1 {
@@ -22,117 +23,95 @@
             font-size: 2.5em;
         }
         .container {
-            max-width: 800px;
+            max-width: 600px;
             margin: 20px auto;
             padding: 20px;
-            background-color: white;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: white; /* White background for form area */
+            border: 2px solid #4E321E; /* Dark brown border */
             border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
         }
-        select, button {
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="number"] {
+            width: 80%;
             padding: 10px;
-            margin: 10px;
-            font-size: 1em;
+            margin-bottom: 15px;
+            border: 1px solid #4E321E;
             border-radius: 5px;
-            border: 1px solid #ccc;
+            font-size: 1em;
         }
         button {
-            background-color: #d32f2f; /* Red for a bold action button */
-            color: white;
+            background-color: #4E321E; /* Dark brown button */
+            color: #F3BB21; /* Yellow text on button */
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
             cursor: pointer;
         }
         button:hover {
-            background-color: #b71c1c;
-        }
-        .song-list {
-            margin: 20px 0;
-        }
-        .song-item {
-            margin: 10px 0;
+            background-color: #3a2415; /* Slightly lighter brown on hover */
         }
         #result {
             margin-top: 20px;
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #2e7d32;
+            padding: 15px;
+            background-color: #F3BB21; /* Yellow background for result */
+            border: 1px solid #4E321E;
+            border-radius: 5px;
+            font-size: 1.1em;
         }
     </style>
 </head>
 <body>
     <header>
         <h1>Kickapoo Tribe Baseball</h1>
-        <p>Walkout Song Selector</p>
+        <p>Walkout Song Picker for Parents</p>
     </header>
 
     <div class="container">
-        <h2>Choose Your Walkout Song!</h2>
-        <p>Select a player and pick a song to get you pumped up as you step up to the plate!</p>
+        <h2>Pick Your Child's Walkout Song</h2>
+        <p>Enter the song details below to set your child's walkout song for their next game!</p>
 
-        <!-- Player Selection -->
-        <label for="player">Select Player: </label>
-        <select id="player" name="player">
-            <option value="player1">Player 1 - John Doe</option>
-            <option value="player2">Player 2 - Jane Smith</option>
-            <option value="player3">Player 3 - Mike Johnson</option>
-            <option value="player4">Player 4 - Sarah Brown</option>
-        </select>
+        <!-- Form for Song Details -->
+        <form id="songForm" onsubmit="displaySong(event)">
+            <label for="songName">Song Name:</label>
+            <input type="text" id="songName" name="songName" placeholder="e.g., Sweet Caroline" required>
 
-        <!-- Song List with Audio Previews -->
-        <div class="song-list">
-            <h3>Song Options</h3>
-            <div class="song-item">
-                <p>"Sweet Caroline" by Neil Diamond</p>
-                <audio controls>
-                    <source src="placeholder-audio/sweet-caroline.mp3" type="audio/mp3">
-                    Your browser does not support the audio element.
-                </audio>
-            </div>
-            <div class="song-item">
-                <p>"Thunderstruck" by AC/DC</p>
-                <audio controls>
-                    <source src="placeholder-audio/thunderstruck.mp3" type="audio/mp3">
-                    Your browser does not support the audio element.
-                </audio>
-            </div>
-            <div class="song-item">
-                <p>"Sweet Home Alabama" by Lynyrd Skynyrd</p>
-                <audio controls>
-                    <source src="placeholder-audio/sweet-home-alabama.mp3" type="audio/mp3">
-                    Your browser does not support the audio element.
-                </audio>
-            </div>
-            <div class="song-item">
-                <p>"Enter Sandman" by Metallica</p>
-                <audio controls>
-                    <source src="placeholder-audio/enter-sandman.mp3" type="audio/mp3">
-                    Your browser does not support the audio element.
-                </audio>
-            </div>
-        </div>
+            <label for="artist">Artist:</label>
+            <input type="text" id="artist" name="artist" placeholder="e.g., Neil Diamond" required>
 
-        <!-- Song Selection -->
-        <label for="song">Select Song: </label>
-        <select id="song" name="song">
-            <option value="Sweet Caroline">Sweet Caroline - Neil Diamond</option>
-            <option value="Thunderstruck">Thunderstruck - AC/DC</option>
-            <option value="Sweet Home Alabama">Sweet Home Alabama - Lynyrd Skynyrd</option>
-            <option value="Enter Sandman">Enter Sandman - Metallica</option>
-        </select>
+            <label for="startSecond">Start Second:</label>
+            <input type="number" id="startSecond" name="startSecond" min="0" placeholder="e.g., 30" required>
 
-        <!-- Confirm Button -->
-        <button onclick="confirmSong()">Confirm Song</button>
+            <button type="submit">Submit Song</button>
+        </form>
 
         <!-- Result Display -->
-        <div id="result"></div>
+        <div id="result" style="display: none;"></div>
     </div>
 
     <script>
-        function confirmSong() {
-            const player = document.getElementById("player").options[document.getElementById("player").selectedIndex].text;
-            const song = document.getElementById("song").value;
-            const resultDiv = document.getElementById("result");
+        function displaySong(event) {
+            event.preventDefault(); // Prevent form submission from refreshing the page
 
-            resultDiv.innerHTML = `${player} will walk out to "${song}"! Let's get ready to hit a home run! ⚾`;
+            // Get form values
+            const songName = document.getElementById("songName").value;
+            const artist = document.getElementById("artist").value;
+            const startSecond = document.getElementById("startSecond").value;
+
+            // Display the result
+            const resultDiv = document.getElementById("result");
+            resultDiv.style.display = "block";
+            resultDiv.innerHTML = `Walkout Song Selected!<br>
+                                   Song: "${songName}" by ${artist}<br>
+                                   Starting at: ${startSecond} seconds`;
+
+            // Reset the form
+            document.getElementById("songForm").reset();
         }
     </script>
 </body>
