@@ -59,6 +59,7 @@
             padding: 5px 10px;
             margin-left: 5px;
             cursor: pointer;
+            font-size: 0.9em; /* Slightly smaller for consistency */
         }
         .song-entry button:hover {
             background-color: #3a2415;
@@ -66,6 +67,19 @@
         .song-entry button:disabled {
             background-color: #a0a0a0; /* Grayed out when disabled */
             cursor: not-allowed;
+        }
+        .admin-button {
+            background-color: #4E321E;
+            color: #F3BB21;
+            padding: 5px 10px; /* Smaller padding */
+            border: none;
+            border-radius: 3px;
+            font-size: 0.8em; /* Smaller font size */
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .admin-button:hover {
+            background-color: #3a2415;
         }
         .form-container {
             flex: 2;
@@ -126,6 +140,7 @@
         <div class="sidebar">
             <h2>Selected Walkout Songs</h2>
             <div id="songList"></div>
+            <button id="adminButton" class="admin-button" onclick="toggleAdminMode()">26</button>
         </div>
 
         <!-- Form for Submitting Songs -->
@@ -161,7 +176,6 @@
                     <li>No special characters are allowed in any field.</li>
                 </ul>
             </div>
-            <button id="adminButton" onclick="toggleAdminMode()">26</button>
         </div>
     </div>
 
@@ -328,6 +342,11 @@
 
                     songList.appendChild(songDiv);
                 });
+            }
+            // Ensure the admin button is at the bottom
+            const adminButton = document.getElementById("adminButton");
+            if (adminButton.parentNode !== songList) {
+                songList.appendChild(adminButton);
             }
         }
 
