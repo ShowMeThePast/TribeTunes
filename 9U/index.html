@@ -11,24 +11,52 @@
             color: #4E321E; /* Dark brown text */
             margin: 0;
             padding: 0;
-            text-align: center;
         }
         header {
             background-color: #4E321E; /* Dark brown header */
             color: #F3BB21; /* Yellow text in header */
             padding: 20px;
+            text-align: center;
         }
         header h1 {
             margin: 0;
             font-size: 2.5em;
         }
-        .container {
-            max-width: 600px;
+        .main-container {
+            display: flex;
+            flex-wrap: wrap;
+            max-width: 1200px;
             margin: 20px auto;
+            padding: 0 10px;
+        }
+        .sidebar {
+            flex: 1;
+            min-width: 300px;
+            background-color: white; /* White background for sidebar */
+            border: 2px solid #4E321E; /* Dark brown border */
+            border-radius: 8px;
             padding: 20px;
+            margin-right: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        .sidebar h2 {
+            margin-top: 0;
+            font-size: 1.5em;
+        }
+        .song-entry {
+            background-color: #F3BB21; /* Yellow background for each entry */
+            border: 1px solid #4E321E;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .form-container {
+            flex: 2;
+            min-width: 300px;
             background-color: white; /* White background for form area */
             border: 2px solid #4E321E; /* Dark brown border */
             border-radius: 8px;
+            padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
         }
         label {
@@ -56,14 +84,6 @@
         button:hover {
             background-color: #3a2415; /* Slightly lighter brown on hover */
         }
-        #result {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #F3BB21; /* Yellow background for result */
-            border: 1px solid #4E321E;
-            border-radius: 5px;
-            font-size: 1.1em;
-        }
     </style>
 </head>
 <body>
@@ -72,30 +92,40 @@
         <p>Walkout Song Picker for Parents</p>
     </header>
 
-    <div class="container">
-        <h2>Pick Your Child's Walkout Song</h2>
-        <p>Enter the song details below to set your child's walkout song for their next game!</p>
+    <div class="main-container">
+        <!-- Sidebar for Displaying Songs -->
+        <div class="sidebar">
+            <h2>Selected Walkout Songs</h2>
+            <div id="songList"></div>
+        </div>
 
-        <!-- Form for Song Details -->
-        <form id="songForm" onsubmit="displaySong(event)">
-            <label for="songName">Song Name:</label>
-            <input type="text" id="songName" name="songName" placeholder="e.g., Sweet Caroline" required>
+        <!-- Form for Submitting Songs -->
+        <div class="form-container">
+            <h2>Pick Your Child's Walkout Song</h2>
+            <p>Enter the song details below to set your child's walkout song for their next game!</p>
 
-            <label for="artist">Artist:</label>
-            <input type="text" id="artist" name="artist" placeholder="e.g., Neil Diamond" required>
+            <form id="songForm" onsubmit="addSong(event)">
+                <label for="songName">Song Name:</label>
+                <input type="text" id="songName" name="songName" placeholder="e.g., Sweet Caroline" required>
 
-            <label for="startSecond">Start Second:</label>
-            <input type="number" id="startSecond" name="startSecond" min="0" placeholder="e.g., 30" required>
+                <label for="artist">Artist:</label>
+                <input type="text" id="artist" name="artist" placeholder="e.g., Neil Diamond" required>
 
-            <button type="submit">Submit Song</button>
-        </form>
+                <label for="startSecond">Start Second:</label>
+                <input type="number" id="startSecond" name="startSecond" min="0" placeholder="e.g., 30" required>
 
-        <!-- Result Display -->
-        <div id="result" style="display: none;"></div>
+                <button type="submit">Submit Song</button>
+            </form>
+        </div>
     </div>
 
     <script>
-        function displaySong(event) {
+        // Load songs from localStorage when the page loads
+        document.addEventListener("DOMContentLoaded", () => {
+            displaySongs();
+        });
+
+        function addSong(event) {
             event.preventDefault(); // Prevent form submission from refreshing the page
 
             // Get form values
@@ -103,15 +133,43 @@
             const artist = document.getElementById("artist").value;
             const startSecond = document.getElementById("startSecond").value;
 
-            // Display the result
-            const resultDiv = document.getElementById("result");
-            resultDiv.style.display = "block";
-            resultDiv.innerHTML = `Walkout Song Selected!<br>
-                                   Song: "${songName}" by ${artist}<br>
-                                   Starting at: ${startSecond} seconds`;
+            // Create song object
+            const song = {
+                name: songName,
+                artist: artist,
+                start: startSecond
+            };
+
+            // Get existing songs from localStorage or initialize an empty array
+            let songs = JSON.parse(localStorage.getItem("walkoutSongs")) || [];
+            songs.push(song); // Add the new song to the array
+            localStorage.setItem("walkoutSongs", JSON.stringify(songs)); // Save back to localStorage
+
+            // Display the updated list
+            displaySongs();
 
             // Reset the form
             document.getElementById("songForm").reset();
+        }
+
+        function displaySongs() {
+            const songList = document.getElementById("songList");
+            const songs = JSON.parse(localStorage.getItem("walkoutSongs")) || [];
+
+            // Clear the current list
+            songList.innerHTML = "";
+
+            // Display each song
+            if (songs.length === 0) {
+                songList.innerHTML = "<p>No songs selected yet.</p>";
+            } else {
+                songs.forEach(song => {
+                    const songDiv = document.createElement("div");
+                    songDiv.className = "song-entry";
+                    songDiv.innerHTML = `Song: "${song.name}" by ${song.artist}<br>Starting at: ${song.start} seconds`;
+                    songList.appendChild(songDiv);
+                });
+            }
         }
     </script>
 </body>
