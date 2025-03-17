@@ -6,9 +6,9 @@
     <title>Baseball Walk-Up Song Selector</title>
     <style>
         body {
-            background: linear-gradient(135deg, #ff6f61, #6b48ff, #ffeb3b);
+            background: linear-gradient(135deg, #8B4513, #DAA520); /* Brown to yellow gradient */
             font-family: 'Arial', sans-serif;
-            color: #fff;
+            color: #FFF; /* White text */
             text-align: center;
             margin: 0;
             padding: 20px;
@@ -21,25 +21,27 @@
         }
         h1 {
             font-size: 3em;
-            color: #ffeb3b;
-            text-shadow: 2px 2px #6b48ff;
+            color: #DAA520; /* Yellow */
+            text-shadow: 2px 2px #000; /* Black shadow for contrast */
             margin-bottom: 20px;
         }
         p {
             font-size: 1.2em;
             margin: 10px 0;
-            color: #fff;
+            color: #FFF; /* White */
         }
         .instructions {
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: rgba(0, 0, 0, 0.3); /* Semi-transparent black */
             padding: 15px;
+            border: 2px solid #DAA520; /* Yellow border */
             border-radius: 10px;
             margin: 20px auto;
             max-width: 600px;
         }
         #disqus_thread {
-            background-color: rgba(255, 255, 255, 0.2);
+            background-color: rgba(139, 69, 19, 0.2); /* Light brown overlay */
             padding: 20px;
+            border: 2px solid #000; /* Black border */
             border-radius: 10px;
             margin-top: 20px;
             max-width: 800px;
@@ -48,16 +50,16 @@
         }
         /* Button for lazy loading comments */
         .load-comments {
-            background-color: #ff6f61;
-            color: #fff;
+            background-color: #DAA520; /* Yellow */
+            color: #000; /* Black text */
             padding: 10px 20px;
-            border: none;
+            border: 2px solid #000; /* Black border */
             border-radius: 5px;
             cursor: pointer;
             font-size: 1.1em;
         }
         .load-comments:hover {
-            background-color: #e65b50;
+            background-color: #FFD700; /* Lighter yellow on hover */
         }
     </style>
 </head>
@@ -75,8 +77,8 @@
     <script>
         function loadComments() {
             var disqus_config = function () {
-                this.page.url = "https://showmethepast.github.io/TribeTunes/"; // GitHub Pages URL
-                this.page.identifier = "walk-up-songs";
+                this.page.url = "https://showmethepast.github.io/TribeTunes/"; // Updated URL
+                this.page.identifier = "tribe-tunes-walk-up-songs";
                 this.page.title = "Baseball Walk-Up Song Selector";
             };
 
