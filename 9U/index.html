@@ -1,508 +1,125 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kickapoo Tribe Baseball 9U</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #F3BB21;
-            color: #4E321E;
-            margin: 0;
-            padding: 0;
-        }
-        header {
-            background-color: #4E321E;
-            color: #F3BB21;
-            padding: 20px;
-            text-align: center;
-        }
-        header h1 {
-            margin: 0;
-            font-size: 2.5em;
-        }
-        .main-container {
-            display: flex;
-            flex-wrap: wrap;
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 0 10px;
-        }
-        .sidebar {
-            flex: 1;
-            min-width: 300px;
-            background-color: white;
-            border: 2px solid #4E321E;
-            border-radius: 8px;
-            padding: 20px;
-            margin-right: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            position: relative;
-        }
-        .sidebar h2 {
-            margin-top: 0;
-            font-size: 1.5em;
-        }
-        .song-list-container {
-            min-height: 100px;
-        }
-        .song-entry {
-            background-color: #F3BB21;
-            border: 1px solid #4E321E;
-            border-radius: 5px;
-            padding: 10px;
-            margin-bottom: 10px;
-            position: relative;
-        }
-        .song-entry button {
-            background-color: #4E321E;
-            color: #F3BB21;
-            border: none;
-            border-radius: 3px;
-            padding: 5px 10px;
-            margin-left: 5px;
-            cursor: pointer;
-            font-size: 0.9em;
-        }
-        .song-entry button:hover {
-            background-color: #3a2415;
-        }
-        .song-entry button:disabled {
-            background-color: #a0a0a0;
-            cursor: not-allowed;
-        }
-        .admin-button {
-            background-color: #4E321E;
-            color: #F3BB21;
-            padding: 5px 10px;
-            border: none;
-            border-radius: 3px;
-            font-size: 0.8em;
-            cursor: pointer;
-            margin-top: 10px;
-            display: block;
-            position: absolute;
-            bottom: 20px;
-            width: calc(100% - 40px);
-        }
-        .admin-button:hover {
-            background-color: #3a2415;
-        }
-        .form-container {
-            flex: 2;
-            min-width: 300px;
-            background-color: white;
-            border: 2px solid #4E321E;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-        }
-        label {
-            display: block;
-            margin: 10px 0 5px;
-            font-weight: bold;
-        }
-        input[type="text"], input[type="number"] {
-            width: 80%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #4E321E;
-            border-radius: 5px;
-            font-size: 1em;
-        }
-        button {
-            background-color: #4E321E;
-            color: #F3BB21;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            font-size: 1em;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #3a2415;
-        }
-        .error-message, .info-box {
-            color: #4E321E;
-            font-weight: bold;
-            margin-top: 10px;
-            padding: 10px;
-            border: 1px solid #4E321E;
-            border-radius: 5px;
-        }
-        .info-box {
-            background-color: #fff;
-            font-style: italic;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <h1>Kickapoo Tribe Baseball 9U</h1>
-        <p>Tonight's Game Lineup</p>
-    </header>
+// Frontend Code: Updated HTML, JavaScript with Admin Mode, Error Handling, and Song Previews
 
-    <div class="main-container">
-        <!-- Sidebar for Displaying Songs -->
-        <div class="sidebar">
-            <h2>Starting Lineup</h2>
-            <div class="song-list-container">
-                <div id="songList"></div>
-            </div>
-            <button id="adminButton" class="admin-button" onclick="toggleAdminMode()">26</button>
-        </div>
+const GOOGLE_SHEETS_API = "https://script.google.com/macros/s/AKfycbxK7tApb4dq_ZbuOwnCwdkPYWclo6EMkdVTq_T5tQxjOjytN84lbeH6duTfbzRv8wes/exec";
+const SECRET_CODE = "kickapoo2025";
+const TIMEOUT = 60 * 1000;
+let lastAdditionTime = null;
 
-        <!-- Form for Submitting Songs -->
-        <div class="form-container">
-            <h2>Pick Your Child's Walkout Song</h2>
-            <p>Enter the song details below to set your child's walkout song for their next game!</p>
+document.addEventListener("DOMContentLoaded", () => {
+    fetchSongs();
+    if (sessionStorage.getItem("admin") === "true") {
+        isAdmin = true;
+    }
+    setInterval(checkTimers, 1000);
+});
 
-            <!-- Form for Song Details -->
-            <form id="songForm" onsubmit="addSong(event)">
-                <label for="childName">Child's Name:</label>
-                <input type="text" id="childName" name="childName" placeholder="e.g., Alex Smith" required>
+function displayError(message) {
+    const errorBox = document.getElementById("errorMessage");
+    errorBox.textContent = message;
+    errorBox.style.display = "block";
+    setTimeout(() => { errorBox.style.display = "none"; }, 5000);
+}
 
-                <label for="childNumber">Child's Number:</label>
-                <input type="number" id="childNumber" name="childNumber" min="0" max="99" placeholder="e.g., 12" required>
+async function fetchSongs() {
+    try {
+        const response = await fetch(GOOGLE_SHEETS_API, { mode: 'cors' });
+        const songs = await response.json();
+        displaySongs(songs);
+    } catch (error) {
+        console.error("Error fetching songs:", error);
+        displayError("Error loading songs. Check console for details.");
+    }
+}
 
-                <label for="songName">Song Name:</label>
-                <input type="text" id="songName" name="songName" placeholder="e.g., Sweet2023" required>
+async function addSong(event) {
+    event.preventDefault();
+    
+    const song = {
+        childName: document.getElementById("childName").value.trim(),
+        childNumber: document.getElementById("childNumber").value,
+        name: document.getElementById("songName").value.trim(),
+        artist: document.getElementById("artist").value.trim(),
+        start: document.getElementById("startSecond").value,
+        battingOrder: document.getElementById("battingOrder").value,
+        positionPlayed: document.getElementById("positionPlayed").value.trim()
+    };
 
-                <label for="artist">Artist:</label>
-                <input type="text" id="artist" name="artist" placeholder="e.g., Artist123" required>
-
-                <label for="startSecond">Start Second:</label>
-                <input type="number" id="startSecond" name="startSecond" min="0" placeholder="e.g., 30" required>
-
-                <label for="battingOrder">Batting Order:</label>
-                <input type="number" id="battingOrder" name="battingOrder" min="1" max="9" placeholder="e.g., 1" required>
-
-                <label for="positionPlayed">Position Played:</label>
-                <input type="text" id="positionPlayed" name="positionPlayed" placeholder="e.g., Pitcher" required>
-
-                <button type="submit">Add Song</button>
-            </form>
-            <div id="errorMessage" class="error-message"></div>
-            <div class="info-box">
-                <p><strong>Input Rules:</strong></p>
-                <ul>
-                    <li>Child's Name and Position Played must contain only letters (a-z, A-Z) and spaces.</li>
-                    <li>Song Name and Artist can contain letters (a-z, A-Z), numbers (0-9), and spaces, but no special characters.</li>
-                    <li>Child's Number must be a number between 0 and 99.</li>
-                    <li>Batting Order must be a number between 1 and 9.</li>
-                    <li>Start Second must contain only numbers (0-9).</li>
-                    <li>No special characters are allowed in any field.</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let isAdmin = false;
-        const SECRET_CODE = "kickapoo2025";
-        const TIMEOUT = 60 * 1000;
-        let lastAdditionTime = null;
-        const GOOGLE_SHEETS_API = "https://script.google.com/macros/s/AKfycbx3dgJhDf634xqkReXFha4AXoy7lOPmGAdq_nFBcH1BLKviTjFsFmDl0kt0bUQlF1eV/exec";
-
-        // Load songs from Google Sheets when the page loads
-        document.addEventListener("DOMContentLoaded", () => {
-            fetchSongs();
-            setInterval(checkTimers, 1000);
+    try {
+        const response = await fetch(GOOGLE_SHEETS_API, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "add", song }),
+            mode: 'cors'
         });
+        const updatedSongs = await response.json();
+        lastAdditionTime = new Date().getTime();
+        displaySongs(updatedSongs);
+    } catch (error) {
+        console.error("Error adding song:", error);
+        displayError("Error adding song. Check console for details.");
+    }
+}
 
-        // Fetch songs from Google Sheets
-        async function fetchSongs() {
-            try {
-                const response = await fetch(GOOGLE_SHEETS_API, { mode: 'cors' });
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
-                }
-                const songs = await response.json();
-                displaySongs(songs);
-            } catch (error) {
-                console.error("Error fetching songs:", error);
-                document.getElementById("songList").innerHTML = "<p>Error loading songs: " + error.message + ". Check console for details or ensure the web app URL is correct.</p>";
-            }
-        }
-
-        // Add a song to Google Sheets
-        async function addSong(event) {
-            event.preventDefault();
-
-            const songs = await fetchSongsAndReturn();
-            if (songs.length >= 24) {
-                document.getElementById("errorMessage").textContent = "Song limit reached (24 songs). Please delete a song to add a new one.";
-                return;
-            }
-
-            const childName = document.getElementById("childName").value.trim();
-            const childNumber = document.getElementById("childNumber").value;
-            const songName = document.getElementById("songName").value.trim();
-            const artist = document.getElementById("artist").value.trim();
-            const startSecond = document.getElementById("startSecond").value;
-            const battingOrder = document.getElementById("battingOrder").value;
-            const positionPlayed = document.getElementById("positionPlayed").value.trim();
-
-            const alphaRegex = /^[a-zA-Z\s]+$/; // For Child's Name, Position Played
-            const alphanumericRegex = /^[a-zA-Z0-9\s]+$/; // For Song Name, Artist
-            const numberRegex = /^[0-9]+$/;
-
-            if (!alphaRegex.test(childName)) {
-                document.getElementById("errorMessage").textContent = "Child's Name must contain only letters and spaces.";
-                return;
-            }
-            if (!numberRegex.test(childNumber) || childNumber < 0 || childNumber > 99) {
-                document.getElementById("errorMessage").textContent = "Child's Number must be a number between 0 and 99.";
-                return;
-            }
-            if (!alphanumericRegex.test(songName)) {
-                document.getElementById("errorMessage").textContent = "Song Name must contain only letters, numbers, and spaces.";
-                return;
-            }
-            if (!alphanumericRegex.test(artist)) {
-                document.getElementById("errorMessage").textContent = "Artist must contain only letters, numbers, and spaces.";
-                return;
-            }
-            if (!numberRegex.test(startSecond)) {
-                document.getElementById("errorMessage").textContent = "Start Second must contain only numbers.";
-                return;
-            }
-            if (!numberRegex.test(battingOrder) || battingOrder < 1 || battingOrder > 9) {
-                document.getElementById("errorMessage").textContent = "Batting Order must be a number between 1 and 9.";
-                return;
-            }
-            if (!alphaRegex.test(positionPlayed)) {
-                document.getElementById("errorMessage").textContent = "Position Played must contain only letters and spaces.";
-                return;
-            }
-
-            const song = {
-                childName: childName,
-                childNumber: childNumber,
-                name: songName,
-                artist: artist,
-                start: startSecond,
-                battingOrder: battingOrder,
-                positionPlayed: positionPlayed
-            };
-
-            try {
-                const response = await fetch(GOOGLE_SHEETS_API, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ action: "add", song: song }),
-                    mode: 'cors',
-                    redirect: 'follow'
-                });
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
-                }
-                const updatedSongs = await response.json();
-                if (updatedSongs.error) {
-                    throw new Error(`Server error: ${updatedSongs.error}`);
-                }
-                lastAdditionTime = new Date().getTime();
-                displaySongs(updatedSongs);
-                document.getElementById("songForm").reset();
-                document.getElementById("errorMessage").textContent = "";
-            } catch (error) {
-                console.error("Error adding song:", error);
-                document.getElementById("errorMessage").textContent = `Error adding song: ${error.message}. Check console for details or ensure the web app URL and permissions are correct.`;
-            }
-        }
-
-        // Delete a song from Google Sheets
-        async function deleteSong(index) {
-            const songs = await fetchSongsAndReturn();
-            const currentTime = new Date().getTime();
-            const timeElapsed = currentTime - (lastAdditionTime || currentTime);
-
-            if (isAdmin || (timeElapsed <= TIMEOUT)) {
-                if (confirm("Are you sure you want to delete this song?")) {
-                    try {
-                        const response = await fetch(GOOGLE_SHEETS_API, {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ action: "delete", index: index }),
-                            mode: 'cors',
-                            redirect: 'follow'
-                        });
-                        if (!response.ok) {
-                            const errorText = await response.text();
-                            throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
-                        }
-                        const updatedSongs = await response.json();
-                        if (updatedSongs.error) {
-                            throw new Error(`Server error: ${updatedSongs.error}`);
-                        }
-                        displaySongs(updatedSongs);
-                    } catch (error) {
-                        console.error("Error deleting song:", error);
-                        document.getElementById("errorMessage").textContent = `Error deleting song: ${error.message}. Check console for details.`;
-                    }
-                }
-            } else {
-                alert("The list is locked. You must enter admin mode to delete after 60 seconds from the last addition.");
-            }
-        }
-
-        // Edit a song in Google Sheets
-        async function editSong(index) {
-            const songs = await fetchSongsAndReturn();
-            const currentTime = new Date().getTime();
-            const timeElapsed = currentTime - (lastAdditionTime || currentTime);
-
-            if (isAdmin || (timeElapsed <= TIMEOUT)) {
-                const song = songs[index];
-
-                const newChildName = prompt("Edit Child's Name:", song.childName);
-                const newChildNumber = prompt("Edit Child's Number:", song.childNumber);
-                const newSongName = prompt("Edit Song Name:", song.name);
-                const newArtist = prompt("Edit Artist:", song.artist);
-                const newStart = prompt("Edit Start Second:", song.start);
-                const newBattingOrder = prompt("Edit Batting Order:", song.battingOrder);
-                const newPositionPlayed = prompt("Edit Position Played:", song.positionPlayed);
-
-                const alphaRegex = /^[a-zA-Z\s]+$/; // For Child's Name, Position Played
-                const alphanumericRegex = /^[a-zA-Z0-9\s]+$/; // For Song Name, Artist
-                const numberRegex = /^[0-9]+$/;
-
-                if (newChildName && newChildNumber && newSongName && newArtist && newStart && newBattingOrder && newPositionPlayed) {
-                    if (!alphaRegex.test(newChildName.trim())) {
-                        alert("Child's Name must contain only letters and spaces.");
-                        return;
-                    }
-                    if (!numberRegex.test(newChildNumber) || newChildNumber < 0 || newChildNumber > 99) {
-                        alert("Child's Number must be a number between 0 and 99.");
-                        return;
-                    }
-                    if (!alphanumericRegex.test(newSongName.trim())) {
-                        alert("Song Name must contain only letters, numbers, and spaces.");
-                        return;
-                    }
-                    if (!alphanumericRegex.test(newArtist.trim())) {
-                        alert("Artist must contain only letters, numbers, and spaces.");
-                        return;
-                    }
-                    if (!numberRegex.test(newStart)) {
-                        alert("Start Second must contain only numbers.");
-                        return;
-                    }
-                    if (!numberRegex.test(newBattingOrder) || newBattingOrder < 1 || newBattingOrder > 9) {
-                        alert("Batting Order must be a number between 1 and 9.");
-                        return;
-                    }
-                    if (!alphaRegex.test(newPositionPlayed.trim())) {
-                        alert("Position Played must contain only letters and spaces.");
-                        return;
-                    }
-
-                    const updatedSong = {
-                        childName: newChildName.trim(),
-                        childNumber: newChildNumber,
-                        name: newSongName.trim(),
-                        artist: newArtist.trim(),
-                        start: newStart,
-                        battingOrder: newBattingOrder,
-                        positionPlayed: newPositionPlayed.trim()
-                    };
-
-                    try {
-                        const response = await fetch(GOOGLE_SHEETS_API, {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ action: "edit", index: index, song: updatedSong }),
-                            mode: 'cors',
-                            redirect: 'follow'
-                        });
-                        if (!response.ok) {
-                            const errorText = await response.text();
-                            throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
-                        }
-                        const updatedSongs = await response.json();
-                        if (updatedSongs.error) {
-                            throw new Error(`Server error: ${updatedSongs.error}`);
-                        }
-                        lastAdditionTime = currentTime;
-                        displaySongs(updatedSongs);
-                    } catch (error) {
-                        console.error("Error editing song:", error);
-                        document.getElementById("errorMessage").textContent = `Error editing song: ${error.message}. Check console for details.`;
-                    }
-                }
-            } else {
-                alert("The list is locked. You must enter admin mode to edit after 60 seconds from the last addition.");
-            }
-        }
-
-        // Helper function to fetch songs and return them
-        async function fetchSongsAndReturn() {
-            try {
-                const response = await fetch(GOOGLE_SHEETS_API, { mode: 'cors' });
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
-                }
-                const data = await response.json();
-                if (data.error) {
-                    throw new Error(`Server error: ${data.error}`);
-                }
-                return data;
-            } catch (error) {
-                console.error("Error fetching songs:", error);
-                throw error;
-            }
-        }
-
-        // Display the song list
-        function displaySongs(songs) {
-            const songList = document.getElementById("songList");
-            songList.innerHTML = "";
-            if (!songs || songs.length === 0) {
-                songList.innerHTML = "<p>No songs selected yet.</p>";
-            } else {
-                songs.forEach((song, index) => {
-                    const songDiv = document.createElement("div");
-                    songDiv.className = "song-entry";
-                    songDiv.innerHTML = `Child: ${song.childName} (#${song.childNumber})<br>Song: "${song.name}" by ${song.artist}<br>Starting at: ${song.start} seconds<br>Batting Order: ${song.battingOrder}<br>Position: ${song.positionPlayed}<br>`;
-                    const editButton = document.createElement("button");
-                    editButton.textContent = "Edit";
-                    const currentTime = new Date().getTime();
-                    const timeElapsed = currentTime - (lastAdditionTime || currentTime);
-                    editButton.disabled = !isAdmin && (timeElapsed > TIMEOUT);
-                    editButton.onclick = () => editSong(index);
-                    songDiv.appendChild(editButton);
-
-                    const deleteButton = document.createElement("button");
-                    deleteButton.textContent = "Delete";
-                    deleteButton.disabled = !isAdmin && (timeElapsed > TIMEOUT);
-                    deleteButton.onclick = () => deleteSong(index);
-                    songDiv.appendChild(deleteButton);
-
-                    songList.appendChild(songDiv);
-                });
-            }
-        }
-
-        // Check timers periodically
-        function checkTimers() {
+async function deleteSong(index) {
+    if (!isAdmin && (new Date().getTime() - (lastAdditionTime || 0) > TIMEOUT)) {
+        alert("List is locked. Enter admin mode to delete.");
+        return;
+    }
+    if (confirm("Are you sure you want to delete this song?")) {
+        try {
+            await fetch(GOOGLE_SHEETS_API, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: "delete", index }),
+                mode: 'cors'
+            });
             fetchSongs();
+        } catch (error) {
+            console.error("Error deleting song:", error);
+            displayError("Error deleting song. Check console for details.");
         }
+    }
+}
 
-        // Toggle admin mode
-        function toggleAdminMode() {
-            const code = prompt("What Is the Airspeed Velocity of an Unladen Swallow?");
-            if (code === SECRET_CODE) {
-                isAdmin = true;
-                alert("Admin mode enabled. You can now edit or delete all songs.");
-                fetchSongs();
-            } else {
-                alert("Incorrect answer. Admin mode not enabled.");
-            }
-        }
-    </script>
-</body>
-</html>
+function displaySongs(songs) {
+    const songList = document.getElementById("songList");
+    songList.innerHTML = songs.length ? "" : "<p>No songs selected yet.</p>";
+    songs.forEach((song, index) => {
+        const songDiv = document.createElement("div");
+        songDiv.className = "song-entry";
+        songDiv.innerHTML = `Child: ${song.childName} (#${song.childNumber})<br>"${song.name}" by ${song.artist}<br>Start: ${song.start}s<br>`;
+
+        const editButton = document.createElement("button");
+        editButton.textContent = "Edit";
+        editButton.onclick = () => editSong(index);
+        songDiv.appendChild(editButton);
+
+        const deleteButton = document.createElement("button");
+        deleteButton.textContent = "Delete";
+        deleteButton.onclick = () => deleteSong(index);
+        songDiv.appendChild(deleteButton);
+
+        const playButton = document.createElement("button");
+        playButton.textContent = "▶ Play";
+        playButton.onclick = () => playPreview(song.name, song.artist);
+        songDiv.appendChild(playButton);
+
+        songList.appendChild(songDiv);
+    });
+}
+
+function playPreview(songName, artist) {
+    const searchQuery = encodeURIComponent(`${songName} ${artist} preview`);
+    window.open(`https://www.youtube.com/results?search_query=${searchQuery}`, "_blank");
+}
+
+function toggleAdminMode() {
+    const code = prompt("Enter Admin Passcode:");
+    if (code === SECRET_CODE) {
+        sessionStorage.setItem("admin", "true");
+        alert("Admin mode enabled.");
+        isAdmin = true;
+    } else {
+        alert("Incorrect passcode.");
+    }
+}
