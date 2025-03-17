@@ -167,10 +167,10 @@
                 <input type="number" id="childNumber" name="childNumber" min="0" max="99" placeholder="e.g., 12" required>
 
                 <label for="songName">Song Name:</label>
-                <input type="text" id="songName" name="songName" placeholder="e.g., Sweet Caroline 2023" required>
+                <input type="text" id="songName" name="songName" placeholder="e.g., Sweet2023" required>
 
                 <label for="artist">Artist:</label>
-                <input type="text" id="artist" name="artist" placeholder="e.g., Neil Diamond" required>
+                <input type="text" id="artist" name="artist" placeholder="e.g., Artist123" required>
 
                 <label for="startSecond">Start Second:</label>
                 <input type="number" id="startSecond" name="startSecond" min="0" placeholder="e.g., 30" required>
@@ -187,11 +187,10 @@
             <div class="info-box">
                 <p><strong>Input Rules:</strong></p>
                 <ul>
-                    <li>Child's Name and Artist must contain only letters (a-z, A-Z) and spaces.</li>
-                    <li>Song Name can contain letters (a-z, A-Z), numbers (0-9), and spaces.</li>
+                    <li>Child's Name and Position Played must contain only letters (a-z, A-Z) and spaces.</li>
+                    <li>Song Name and Artist can contain letters (a-z, A-Z), numbers (0-9), and spaces, but no special characters.</li>
                     <li>Child's Number must be a number between 0 and 99.</li>
                     <li>Batting Order must be a number between 1 and 9.</li>
-                    <li>Position Played must contain only letters and spaces.</li>
                     <li>Start Second must contain only numbers (0-9).</li>
                     <li>No special characters are allowed in any field.</li>
                 </ul>
@@ -204,7 +203,7 @@
         const SECRET_CODE = "kickapoo2025";
         const TIMEOUT = 60 * 1000;
         let lastAdditionTime = null;
-        const GOOGLE_SHEETS_API = "https://script.google.com/macros/s/AKfycbytieoeqhgnb3t9IPqrgxkwgAiywLuucMyNmvXBSjwDUciZI9mAffvhI1w4LAKKuMQ3/exec";
+        const GOOGLE_SHEETS_API = "https://script.google.com/macros/s/AKfycbx3dgJhDf634xqkReXFha4AXoy7lOPmGAdq_nFBcH1BLKviTjFsFmDl0kt0bUQlF1eV/exec";
 
         // Load songs from Google Sheets when the page loads
         document.addEventListener("DOMContentLoaded", () => {
@@ -246,8 +245,8 @@
             const battingOrder = document.getElementById("battingOrder").value;
             const positionPlayed = document.getElementById("positionPlayed").value.trim();
 
-            const alphaRegex = /^[a-zA-Z\s]+$/; // For Child's Name, Artist, and Position Played
-            const songNameRegex = /^[a-zA-Z0-9\s]+$/; // For Song Name (allows numbers)
+            const alphaRegex = /^[a-zA-Z\s]+$/; // For Child's Name, Position Played
+            const alphanumericRegex = /^[a-zA-Z0-9\s]+$/; // For Song Name, Artist
             const numberRegex = /^[0-9]+$/;
 
             if (!alphaRegex.test(childName)) {
@@ -258,12 +257,12 @@
                 document.getElementById("errorMessage").textContent = "Child's Number must be a number between 0 and 99.";
                 return;
             }
-            if (!songNameRegex.test(songName)) {
+            if (!alphanumericRegex.test(songName)) {
                 document.getElementById("errorMessage").textContent = "Song Name must contain only letters, numbers, and spaces.";
                 return;
             }
-            if (!alphaRegex.test(artist)) {
-                document.getElementById("errorMessage").textContent = "Artist must contain only letters and spaces.";
+            if (!alphanumericRegex.test(artist)) {
+                document.getElementById("errorMessage").textContent = "Artist must contain only letters, numbers, and spaces.";
                 return;
             }
             if (!numberRegex.test(startSecond)) {
@@ -367,8 +366,8 @@
                 const newBattingOrder = prompt("Edit Batting Order:", song.battingOrder);
                 const newPositionPlayed = prompt("Edit Position Played:", song.positionPlayed);
 
-                const alphaRegex = /^[a-zA-Z\s]+$/; // For Child's Name, Artist, and Position Played
-                const songNameRegex = /^[a-zA-Z0-9\s]+$/; // For Song Name (allows numbers)
+                const alphaRegex = /^[a-zA-Z\s]+$/; // For Child's Name, Position Played
+                const alphanumericRegex = /^[a-zA-Z0-9\s]+$/; // For Song Name, Artist
                 const numberRegex = /^[0-9]+$/;
 
                 if (newChildName && newChildNumber && newSongName && newArtist && newStart && newBattingOrder && newPositionPlayed) {
@@ -380,12 +379,12 @@
                         alert("Child's Number must be a number between 0 and 99.");
                         return;
                     }
-                    if (!songNameRegex.test(newSongName.trim())) {
+                    if (!alphanumericRegex.test(newSongName.trim())) {
                         alert("Song Name must contain only letters, numbers, and spaces.");
                         return;
                     }
-                    if (!alphaRegex.test(newArtist.trim())) {
-                        alert("Artist must contain only letters and spaces.");
+                    if (!alphanumericRegex.test(newArtist.trim())) {
+                        alert("Artist must contain only letters, numbers, and spaces.");
                         return;
                     }
                     if (!numberRegex.test(newStart)) {
