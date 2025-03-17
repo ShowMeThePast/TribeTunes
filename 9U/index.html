@@ -182,10 +182,13 @@
     <script>
         let isAdmin = false; // Admin mode flag
         const SECRET_CODE = "kickapoo2025"; // Secret code to enable admin mode
+        const EDIT_TIMEOUT = 60 * 1000; // 60 seconds in milliseconds
 
         // Load songs from localStorage when the page loads
         document.addEventListener("DOMContentLoaded", () => {
             displaySongs();
+            // Start checking edit timers periodically
+            setInterval(checkEditTimers, 1000); // Check every second
         });
 
         // Add a song to the list
@@ -236,7 +239,8 @@
                 name: songName,
                 artist: artist,
                 start: startSecond,
-                isValid: true // Flag to indicate the entry is fully valid
+                isValid: true, // Flag to indicate the entry is fully valid
+                timestamp: new Date().getTime() // Timestamp of addition/edit
             };
 
             songs.push(song);
@@ -264,7 +268,10 @@
         // Edit a song
         function editSong(index) {
             let songs = JSON.parse(localStorage.getItem("walkoutSongs")) || [];
-            if (isAdmin || songs[index].isValid) {
+            const currentTime = new Date().getTime();
+            const timeElapsed = currentTime - songs[index].timestamp;
+
+            if (isAdmin || (songs[index].isValid && timeElapsed <= EDIT_TIMEOUT)) {
                 const song = songs[index];
 
                 const newChildName = prompt("Edit Child's Name:", song.childName);
@@ -305,13 +312,14 @@
                         name: newSongName.trim(),
                         artist: newArtist.trim(),
                         start: newStart,
-                        isValid: true
+                        isValid: true,
+                        timestamp: currentTime // Update timestamp on edit
                     };
                     localStorage.setItem("walkoutSongs", JSON.stringify(songs));
                     displaySongs();
                 }
             } else {
-                alert("This song cannot be edited because it was not entered with all valid fields. Admin access required.");
+                alert("This song can only be edited by an admin after 60 seconds from addition/edit.");
             }
         }
 
@@ -330,7 +338,9 @@
                     songDiv.innerHTML = `Child: ${song.childName} (#${song.childNumber})<br>Song: "${song.name}" by ${song.artist}<br>Starting at: ${song.start} seconds<br>`;
                     const editButton = document.createElement("button");
                     editButton.textContent = "Edit";
-                    editButton.disabled = !isAdmin && !song.isValid; // Disable if not admin and not valid
+                    const currentTime = new Date().getTime();
+                    const timeElapsed = currentTime - song.timestamp;
+                    editButton.disabled = !isAdmin && (!song.isValid || timeElapsed > EDIT_TIMEOUT); // Disable if not admin, not valid, or past 60 seconds
                     editButton.onclick = () => editSong(index);
                     songDiv.appendChild(editButton);
 
@@ -348,6 +358,11 @@
             if (adminButton.parentNode !== songList) {
                 songList.appendChild(adminButton);
             }
+        }
+
+        // Check edit timers periodically
+        function checkEditTimers() {
+            displaySongs(); // Refresh the display to update button states
         }
 
         // Toggle admin mode
