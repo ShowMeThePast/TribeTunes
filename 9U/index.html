@@ -55,7 +55,6 @@
         .header-subtitle {
             font-size: 1.4em;
             margin-top: 5px;
-            font-style: italic;
             text-shadow: 0 0 25px #4E321E;
             transform: skewX(-10deg);
         }
@@ -119,7 +118,6 @@
             font-size: 2em;
             color: #D7B358;
             margin: 5px 0;
-            font-style: italic;
             text-shadow: 0 0 15px #4E321E;
         }
         .song {
@@ -225,8 +223,8 @@
                         <div class="batting-order">${player.battingOrder}</div>
                         <div class="player-name">${player.childName}</div>
                         <div class="player-number">#${player.childNumber}</div>
-                        <div class="position">Position: ${player.startingPosition}</div>
-                        <div class="song">${player.walkoutSongName} by ${player.walkoutSongArtistName} - ${player.startingSecond}s</div>
+                        <div class="position">Starting Position: ${player.startingPosition}</div>
+                        <div class="song">Walkout Song: ${player.walkoutSongName} by ${player.walkoutSongArtistName} - ${player.startingSecond}s</div>
                     `;
                     playerList.appendChild(playerCard);
                 });
