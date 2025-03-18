@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: 'Impact', Arial, sans-serif;
-            background: linear-gradient(180deg, #140a05 0%, #2b1a0f 100%);
+            background: linear-gradient(180deg, #0f0703 0%, #1f1209 100%);
             color: #F3BB21;
             margin: 0;
             padding: 0;
@@ -22,15 +22,15 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: url('https://www.transparenttextures.com/patterns/chain.png') repeat, url('https://www.pngall.com/wp-content/uploads/5/Baseball-Diamond.png') no-repeat center;
-            background-size: 250px, 80%;
-            opacity: 0.5;
-            animation: chainRattle 25s linear infinite;
+            background: url('https://www.transparenttextures.com/patterns/molten-cracks.png') repeat, url('https://www.pngall.com/wp-content/uploads/5/Baseball-Diamond.png') no-repeat center;
+            background-size: 300px, 75%;
+            opacity: 0.6;
+            animation: crackSpread 30s linear infinite;
             z-index: -1;
         }
-        @keyframes chainRattle {
+        @keyframes crackSpread {
             0% { background-position: 0 0, center; }
-            100% { background-position: 250px 250px, center; }
+            100% { background-position: 300px 300px, center; }
         }
         body::after {
             content: '';
@@ -39,192 +39,191 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle, rgba(255, 69, 0, 0.3) 0%, transparent 60%);
-            animation: lavaPulse 4s ease-in-out infinite;
+            background: radial-gradient(circle, rgba(255, 20, 20, 0.4) 0%, transparent 50%);
+            animation: bloodSky 3s ease-in-out infinite;
             z-index: -1;
         }
-        @keyframes lavaPulse {
-            0%, 100% { opacity: 0.4; }
-            50% { opacity: 0.7; }
+        @keyframes bloodSky {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
         }
         header {
-            background: url('https://www.transparenttextures.com/patterns/spikes.png');
+            background: url('https://www.transparenttextures.com/patterns/jagged-metal.png');
             background-size: cover;
             color: #F3BB21;
-            padding: 60px 20px;
+            padding: 70px 20px;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
-            border-bottom: 10px solid #ff4500;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.9);
+            border-bottom: 12px solid #ff1414;
             position: relative;
             overflow: hidden;
         }
         header::after {
-            content: '☠';
+            content: '💀';
             position: absolute;
-            top: 15px;
-            right: 25px;
-            font-size: 4em;
-            color: #ff4500;
-            text-shadow: 0 0 20px #F3BB21;
-            animation: skullGlow 1s infinite;
+            top: 20px;
+            right: 30px;
+            font-size: 5em;
+            color: #ff1414;
+            text-shadow: 0 0 25px #F3BB21;
+            animation: skullPulse 1.5s infinite;
         }
-        @keyframes skullGlow {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.8; }
+        @keyframes skullPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
         header h1 {
             margin: 0;
-            font-size: 5.5em;
+            font-size: 6em;
             text-transform: uppercase;
-            letter-spacing: 6px;
-            text-shadow: 0 0 25px #ff4500, 0 0 50px #ff4500, 0 0 75px #ff4500;
-            animation: lavaDrip 2.5s ease-in-out infinite;
+            letter-spacing: 8px;
+            text-shadow: 0 0 30px #ff1414, 0 0 60px #ff1414, 0 0 90px #ff1414;
+            animation: acidDrip 2s ease-in-out infinite;
         }
-        @keyframes lavaDrip {
+        @keyframes acidDrip {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(8px); }
+            50% { transform: translateY(10px); }
         }
         .header-subtitle {
-            font-size: 1.8em;
-            margin-top: 20px;
+            font-size: 2em;
+            margin-top: 25px;
             font-style: italic;
             color: #F3BB21;
-            text-shadow: 0 0 15px #ff4500;
+            text-shadow: 0 0 20px #ff1414;
         }
         .bat-icon {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            width: 80px;
-            transform: rotate(-40deg);
-            filter: drop-shadow(0 0 20px #ff4500) brightness(1.3);
+            top: 25px;
+            left: 25px;
+            width: 100px;
+            transform: rotate(-45deg);
+            filter: drop-shadow(0 0 25px #ff1414) brightness(1.4);
         }
         .main-container {
             max-width: 1400px;
-            margin: 60px auto;
+            margin: 70px auto;
             padding: 0 10px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 35px;
         }
         .player-card {
-            background: url('https://www.transparenttextures.com/patterns/scorched.png');
+            background: url('https://www.transparenttextures.com/patterns/rusted-steel.png');
             background-size: cover;
-            border: 8px solid #F3BB21;
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.9), inset 0 0 20px #ff4500;
+            border: 10px solid #F3BB21;
+            border-radius: 15px;
+            padding: 35px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.9), inset 0 0 25px #ff1414;
             position: relative;
-            height: 300px;
-            background-color: rgba(40, 40, 40, 0.9);
+            height: 320px;
+            background-color: rgba(30, 30, 30, 0.9);
             overflow: hidden;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
             -webkit-tap-highlight-color: transparent;
         }
         .player-card:hover, .player-card.touched {
-            transform: scale(1.1);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 1), inset 0 0 25px #ff4500;
+            transform: scale(1.12);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 1), inset 0 0 30px #ff1414;
+        }
+        .player-card::before {
+            content: '🔗';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 2em;
+            color: #F3BB21;
+            text-shadow: 0 0 15px #ff1414;
+            animation: chainSwing 2s infinite;
+        }
+        @keyframes chainSwing {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(10deg); }
         }
         .batting-order {
             position: absolute;
-            top: 20px;
-            right: 20px;
+            top: 25px;
+            right: 25px;
             background: #fff url('https://www.pngall.com/wp-content/uploads/5/Baseball-PNG-Free-Download.png') center/cover no-repeat;
-            color: #ff4500;
-            font-size: 3em;
+            color: #ff1414;
+            font-size: 3.5em;
             font-weight: bold;
-            width: 100px;
-            height: 100px;
+            width: 110px;
+            height: 110px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8), inset 0 0 15px #ff4500;
-            border: 4px dashed #ff4500;
-            animation: grenadeFuse 1.2s infinite;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8), inset 0 0 20px #ff1414;
+            border: 5px dashed #ff1414;
+            animation: blastFuse 0.8s infinite;
         }
-        @keyframes grenadeFuse {
-            0%, 100% { transform: rotate(0deg) scale(1); }
-            25% { transform: rotate(8deg) scale(1.08); }
-            75% { transform: rotate(-8deg) scale(1.08); }
+        @keyframes blastFuse {
+            0%, 100% { transform: scale(1); box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8), inset 0 0 20px #ff1414; }
+            50% { transform: scale(1.1); box-shadow: 0 15px 35px rgba(255, 20, 20, 0.8), inset 0 0 25px #ff1414; }
         }
         .player-name {
-            font-size: 2.5em;
+            font-size: 2.8em;
             font-weight: bold;
             color: #F3BB21;
-            margin: 15px 0 5px;
+            margin: 20px 0 5px;
             text-transform: uppercase;
-            text-shadow: 0 0 15px #ff4500, 0 0 30px #ff4500;
-            animation: textFlicker 0.15s infinite;
+            text-shadow: 0 0 20px #ff1414, 0 0 40px #ff1414;
+            animation: slashFlicker 0.1s infinite;
         }
         .player-number {
-            font-size: 1.6em;
+            font-size: 1.8em;
             color: #F3BB21;
             font-weight: bold;
-            text-shadow: 0 0 10px #ff4500;
+            text-shadow: 0 0 15px #ff1414;
         }
         .position {
-            font-size: 1.8em;
+            font-size: 2em;
             color: #F3BB21;
             margin: 5px 0;
             font-style: italic;
-            text-shadow: 0 0 10px #ff4500;
+            text-shadow: 0 0 15px #ff1414;
         }
         .song-display {
             width: 100%;
-            height: 60px;
-            background: #000 url('https://www.transparenttextures.com/patterns/cracked.png');
+            height: 70px;
+            background: #000 url('https://www.transparenttextures.com/patterns/blood-smeared.png');
             background-size: cover;
             color: #F3BB21;
-            font-size: 1.5em;
+            font-size: 1.6em;
             font-family: 'Courier New', monospace;
             text-transform: uppercase;
             position: absolute;
-            bottom: 15px;
+            bottom: 20px;
             left: 0;
             padding: 10px 0;
-            box-shadow: inset 0 0 20px #ff4500, 0 0 25px #ff4500;
-            border: 4px solid #F3BB21;
+            box-shadow: inset 0 0 25px #ff1414, 0 0 30px #ff1414;
+            border: 5px solid #F3BB21;
             text-align: center;
-            line-height: 1.2;
-            animation: neonCrackle 0.2s infinite;
+            line-height: 1.1;
+            animation: goreGlow 0.25s infinite;
         }
-        @keyframes neonCrackle {
-            0%, 100% { box-shadow: inset 0 0 20px #ff4500, 0 0 25px #ff4500; }
-            50% { box-shadow: inset 0 0 15px #ff4500, 0 0 20px #ff4500; }
+        @keyframes goreGlow {
+            0%, 100% { box-shadow: inset 0 0 25px #ff1414, 0 0 30px #ff1414; }
+            50% { box-shadow: inset 0 0 20px #ff1414, 0 0 25px #ff1414; }
         }
         footer {
             text-align: center;
-            padding: 30px;
-            font-size: 1.1em;
+            padding: 35px;
+            font-size: 1.2em;
             color: #F3BB21;
-            text-shadow: 0 0 15px #ff4500;
-        }
-        .sound-toggle {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background-color: #ff4500;
-            color: #F3BB21;
-            border: 4px solid #F3BB21;
-            padding: 18px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.5em;
-            z-index: 10;
-            box-shadow: 0 0 20px #ff4500;
+            text-shadow: 0 0 20px #ff1414;
         }
         @media (max-width: 600px) {
-            header h1 { font-size: 4em; }
-            .header-subtitle { font-size: 1.3em; }
-            .bat-icon { width: 60px; }
-            .player-card { height: 260px; }
-            .batting-order { font-size: 2.5em; width: 80px; height: 80px; }
-            .player-name { font-size: 2em; }
-            .player-number { font-size: 1.3em; }
-            .position { font-size: 1.5em; }
-            .song-display { font-size: 1.2em; height: 50px; }
+            header h1 { font-size: 4.5em; }
+            .header-subtitle { font-size: 1.5em; }
+            .bat-icon { width: 70px; }
+            .player-card { height: 280px; }
+            .batting-order { font-size: 2.8em; width: 90px; height: 90px; }
+            .player-name { font-size: 2.2em; }
+            .player-number { font-size: 1.5em; }
+            .position { font-size: 1.6em; }
+            .song-display { font-size: 1.3em; height: 60px; }
         }
         @media not all and (min-resolution: 0.001dpcm) {
             .player-card:hover, .player-card.touched { transform: none; }
@@ -235,7 +234,7 @@
 </head>
 <body>
     <header>
-        <img src="https://www.pngall.com/wp-content/uploads/5/Baseball-Bat-PNG-Picture.png" alt="Bat Icon" class="bat-icon">
+        <img src="https://www.freeiconspng.com/uploads/baseball-bat-png-2.png" alt="Bat Icon" class="bat-icon">
         <h1>Kickapoo Tribe Baseball 10U Lineup</h1>
         <div class="header-subtitle" id="subtitle">Players listed in batting order for tonight's showdown</div>
     </header>
@@ -247,13 +246,6 @@
     <footer>
         <p>This page is for informational purposes only. Check with the head coach for the latest game intel. Forged by a player's dad—not for betting. Gamble like a warrior.</p>
     </footer>
-
-    <button class="sound-toggle" onclick="toggleSound()">🔊 Off</button>
-
-    <audio id="metalRiff" loop>
-        <source src="https://www.soundjay.com/music/heavy-metal-riff-1.mp3" type="audio/mpeg">
-        Your browser doesn’t support audio.
-    </audio>
 
     <script>
         const GOOGLE_SHEETS_API = "https://script.google.com/macros/s/AKfycbzT6XN6Re9il2J-JWYL27ZUhEF1tLHHd2pYt5HQdVtY0eWeTo52NzRZB1kJQFEBkKs/exec";
@@ -315,21 +307,6 @@
                     this.classList.toggle("touched");
                 });
             });
-        }
-
-        const audio = document.getElementById("metalRiff");
-        const soundButton = document.querySelector(".sound-toggle");
-        let isSoundOn = false;
-
-        function toggleSound() {
-            if (isSoundOn) {
-                audio.pause();
-                soundButton.textContent = "🔊 Off";
-            } else {
-                audio.play();
-                soundButton.textContent = "🔊 On";
-            }
-            isSoundOn = !isSoundOn;
         }
     </script>
 </body>
