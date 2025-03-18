@@ -197,85 +197,9 @@
             }
         }
 
-        // Add a song to Google Sheets using a pure form submission
-        function addSong(event) {
-            event.preventDefault();
-
-            fetchSongsAndReturn().then(songs => {
-                if (songs.length >= 24) {
-                    document.getElementById("errorMessage").textContent = "Song limit reached (24 songs). Please delete a song to add a new one.";
-                    return;
-                }
-
-                const childName = document.getElementById("childName").value.trim();
-                const childNumber = document.getElementById("childNumber").value;
-                const startingPosition = document.getElementById("startingPosition").value.trim();
-                const battingOrder = document.getElementById("battingOrder").value;
-                const walkoutSongName = document.getElementById("walkoutSongName").value.trim();
-                const walkoutSongArtistName = document.getElementById("walkoutSongArtistName").value.trim();
-                const startingSecond = document.getElementById("startingSecond").value;
-
-                const alphaRegex = /^[a-zA-Z\s]+$/; // For Child's Name, Starting Position
-                const alphanumericRegex = /^[a-zA-Z0-9\s]+$/; // For Walkout Song Name, Walkout Song Artist Name
-                const numberRegex = /^[0-9]+$/;
-
-                if (!alphaRegex.test(childName)) {
-                    document.getElementById("errorMessage").textContent = "Child's Name must contain only letters and spaces.";
-                    return;
-                }
-                if (!numberRegex.test(childNumber) || childNumber < 0 || childNumber > 99) {
-                    document.getElementById("errorMessage").textContent = "Child's Number must be a number between 0 and 99.";
-                    return;
-                }
-                if (!alphaRegex.test(startingPosition)) {
-                    document.getElementById("errorMessage").textContent = "Starting Position must contain only letters and spaces.";
-                    return;
-                }
-                if (!numberRegex.test(battingOrder) || battingOrder < 1 || battingOrder > 9) {
-                    document.getElementById("errorMessage").textContent = "Batting Order must be a number between 1 and 9.";
-                    return;
-                }
-                if (!alphanumericRegex.test(walkoutSongName)) {
-                    document.getElementById("errorMessage").textContent = "Walkout Song Name must contain only letters, numbers, and spaces.";
-                    return;
-                }
-                if (!alphanumericRegex.test(walkoutSongArtistName)) {
-                    document.getElementById("errorMessage").textContent = "Walkout Song Artist Name must contain only letters, numbers, and spaces.";
-                    return;
-                }
-                if (!numberRegex.test(startingSecond)) {
-                    document.getElementById("errorMessage").textContent = "Starting Second must contain only numbers.";
-                    return;
-                }
-
-                const song = {
-                    childName: childName,
-                    childNumber: childNumber,
-                    startingPosition: startingPosition,
-                    battingOrder: battingOrder,
-                    walkoutSongName: walkoutSongName,
-                    walkoutSongArtistName: walkoutSongArtistName,
-                    startingSecond: startingSecond
-                };
-
-                // Use a hidden form to submit the POST request
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = GOOGLE_SHEETS_API;
-                form.style.display = 'none';
-
-                const dataInput = document.createElement('input');
-                dataInput.type = 'hidden';
-                dataInput.name = 'data';
-                dataInput.value = JSON.stringify({ action: "add", song: song });
-                form.appendChild(dataInput);
-
-                document.body.appendChild(form);
-
-                // Use form.submit() to avoid CORS issues
-                form.submit();
-
-                // Wait 2 seconds (increased delay for reliability) and then fetch updated songs
+       
+// Wait 2 seconds (increased delay for reliability) and then fetch updated songs
+        
                 setTimeout(() => {
                     fetchSongs().then(updatedSongs => {
                         lastAdditionTime = new Date().getTime();
@@ -295,155 +219,8 @@
             });
         }
 
-        // Delete a song from Google Sheets
-        async function deleteSong(index) {
-            const songs = await fetchSongsAndReturn();
-            const currentTime = new Date().getTime();
-            const timeElapsed = currentTime - (lastAdditionTime || currentTime);
-
-            if (isAdmin || (timeElapsed <= TIMEOUT)) {
-                if (confirm("Are you sure you want to delete this song?")) {
-                    try {
-                        const form = document.createElement('form');
-                        form.method = 'POST';
-                        form.action = GOOGLE_SHEETS_API;
-                        form.style.display = 'none';
-
-                        const dataInput = document.createElement('input');
-                        dataInput.type = 'hidden';
-                        dataInput.name = 'data';
-                        dataInput.value = JSON.stringify({ action: "delete", index: index });
-                        form.appendChild(dataInput);
-
-                        document.body.appendChild(form);
-
-                        // Use form.submit()
-                        form.submit();
-
-                        // Wait 2 seconds and then fetch updated songs
-                        setTimeout(() => {
-                            fetchSongs().then(updatedSongs => {
-                                displaySongs(updatedSongs);
-                            }).catch(error => {
-                                console.error("Error fetching songs after deleting:", error);
-                                document.getElementById("errorMessage").textContent = `Error after deleting song: ${error.message}. Check console for details.`;
-                            }).finally(() => {
-                                const form = document.querySelector('form');
-                                if (form) document.body.removeChild(form);
-                            });
-                        }, 2000);
-                    } catch (error) {
-                        console.error("Error deleting song:", error);
-                        document.getElementById("errorMessage").textContent = `Error deleting song: ${error.message}. Check console for details.`;
-                    }
-                }
-            } else {
-                alert("The list is locked. You must enter admin mode to delete after 60 seconds from the last addition.");
-            }
-        }
-
-        // Edit a song in Google Sheets
-        async function editSong(index) {
-            const songs = await fetchSongsAndReturn();
-            const currentTime = new Date().getTime();
-            const timeElapsed = currentTime - (lastAdditionTime || currentTime);
-
-            if (isAdmin || (timeElapsed <= TIMEOUT)) {
-                const song = songs[index];
-
-                const newChildName = prompt("Edit Child's Name:", song.childName);
-                const newChildNumber = prompt("Edit Child's Number:", song.childNumber);
-                const newStartingPosition = prompt("Edit Starting Position:", song.startingPosition);
-                const newBattingOrder = prompt("Edit Batting Order:", song.battingOrder);
-                const newWalkoutSongName = prompt("Edit Walkout Song Name:", song.walkoutSongName);
-                const newWalkoutSongArtistName = prompt("Edit Walkout Song Artist Name:", song.walkoutSongArtistName);
-                const newStartingSecond = prompt("Edit Starting Second:", song.startingSecond);
-
-                const alphaRegex = /^[a-zA-Z\s]+$/; // For Child's Name, Starting Position
-                const alphanumericRegex = /^[a-zA-Z0-9\s]+$/; // For Walkout Song Name, Walkout Song Artist Name
-                const numberRegex = /^[0-9]+$/;
-
-                if (newChildName && newChildNumber && newStartingPosition && newBattingOrder && newWalkoutSongName && newWalkoutSongArtistName && newStartingSecond) {
-                    if (!alphaRegex.test(newChildName.trim())) {
-                        alert("Child's Name must contain only letters and spaces.");
-                        return;
-                    }
-                    if (!numberRegex.test(newChildNumber) || newChildNumber < 0 || newChildNumber > 99) {
-                        alert("Child's Number must be a number between 0 and 99.");
-                        return;
-                    }
-                    if (!alphaRegex.test(newStartingPosition.trim())) {
-                        alert("Starting Position must contain only letters and spaces.");
-                        return;
-                    }
-                    if (!numberRegex.test(newBattingOrder) || newBattingOrder < 1 || newBattingOrder > 9) {
-                        alert("Batting Order must be a number between 1 and 9.");
-                        return;
-                    }
-                    if (!alphanumericRegex.test(newWalkoutSongName.trim())) {
-                        alert("Walkout Song Name must contain only letters, numbers, and spaces.");
-                        return;
-                    }
-                    if (!alphanumericRegex.test(newWalkoutSongArtistName.trim())) {
-                        alert("Walkout Song Artist Name must contain only letters, numbers, and spaces.");
-                        return;
-                    }
-                    if (!numberRegex.test(newStartingSecond)) {
-                        alert("Starting Second must contain only numbers.");
-                        return;
-                    }
-
-                    const updatedSong = {
-                        childName: newChildName.trim(),
-                        childNumber: newChildNumber,
-                        startingPosition: newStartingPosition.trim(),
-                        battingOrder: newBattingOrder,
-                        walkoutSongName: newWalkoutSongName.trim(),
-                        walkoutSongArtistName: newWalkoutSongArtistName.trim(),
-                        startingSecond: newStartingSecond
-                    };
-
-                    try {
-                        const form = document.createElement('form');
-                        form.method = 'POST';
-                        form.action = GOOGLE_SHEETS_API;
-                        form.style.display = 'none';
-
-                        const dataInput = document.createElement('input');
-                        dataInput.type = 'hidden';
-                        dataInput.name = 'data';
-                        dataInput.value = JSON.stringify({ action: "edit", index: index, song: updatedSong });
-                        form.appendChild(dataInput);
-
-                        document.body.appendChild(form);
-
-                        // Use form.submit()
-                        form.submit();
-
-                        // Wait 2 seconds and then fetch updated songs
-                        setTimeout(() => {
-                            fetchSongs().then(updatedSongs => {
-                                lastAdditionTime = new Date().getTime();
-                                displaySongs(updatedSongs);
-                            }).catch(error => {
-                                console.error("Error fetching songs after editing:", error);
-                                document.getElementById("errorMessage").textContent = `Error after editing song: ${error.message}. Check console for details.`;
-                            }).finally(() => {
-                                const form = document.querySelector('form');
-                                if (form) document.body.removeChild(form);
-                            });
-                        }, 2000);
-                    } catch (error) {
-                        console.error("Error editing song:", error);
-                        document.getElementById("errorMessage").textContent = `Error editing song: ${error.message}. Check console for details.`;
-                    }
-                }
-            } else {
-                alert("The list is locked. You must enter admin mode to edit after 60 seconds from the last addition.");
-            }
-        }
-
-        // Helper function to fetch songs and return them
+// Helper function to fetch songs and return them
+        
         async function fetchSongsAndReturn() {
             try {
                 const response = await fetch(GOOGLE_SHEETS_API, { mode: 'cors' });
@@ -462,7 +239,8 @@
             }
         }
 
-        // Display the song list, sorted by battingOrder
+// Display the song list, sorted by battingOrder
+        
         function displaySongs(songs) {
             const songList = document.getElementById("songList");
             songList.innerHTML = "";
@@ -495,22 +273,11 @@
             }
         }
 
-        // Check timers periodically
+// Check timers periodically
+        
         function checkTimers() {
             fetchSongs();
         }
-
-        // Toggle admin mode
-        function toggleAdminMode() {
-            const code = prompt("What Is the Airspeed Velocity of an Unladen Swallow?");
-            if (code === SECRET_CODE) {
-                isAdmin = true;
-                alert("Admin mode enabled. You can now edit or delete all songs.");
-                fetchSongs();
-            } else {
-                alert("Incorrect answer. Admin mode not enabled.");
-            }
-        }
-    </script>
+   </script>
 </body>
 </html>
