@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kickapoo Tribe Baseball - 9U</title>
+    <title>Kickapoo Tribe Baseball - Walkout Song Picker</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -135,17 +135,30 @@
             background-color: #fff;
             font-style: italic;
         }
+        footer {
+            background-color: #4E321E;
+            color: #F3BB21;
+            padding: 15px;
+            text-align: center;
+            font-size: 0.9em;
+            margin-top: 20px;
+            border-top: 2px solid #F3BB21;
+        }
+        footer p {
+            margin: 0;
+        }
     </style>
 </head>
 <body>
     <header>
-        <h1>Kickapoo Tribe Baseball 9U</h1>
+        <h1>Kickapoo Tribe Baseball</h1>
+        <p>Walkout Song Picker for Parents</p>
     </header>
 
     <div class="main-container">
         <!-- Sidebar for Displaying Songs -->
         <div class="sidebar">
-            <h2>Player Lineup</h2>
+            <h2>Selected Walkout Songs</h2>
             <div class="song-list-container">
                 <div id="songList"></div>
             </div>
@@ -154,8 +167,8 @@
 
         <!-- Form for Submitting Songs -->
         <div class="form-container">
-            <h2>Put me in coach!</h2>
-            <p>Enter the player details below for their next game!</p>
+            <h2>Pick Your Child's Walkout Song</h2>
+            <p>Enter the song details below to set your child's walkout song for their next game!</p>
 
             <!-- Form for Song Details -->
             <form id="songForm" onsubmit="addSong(event)">
@@ -180,7 +193,7 @@
                 <label for="startingSecond">Starting Second:</label>
                 <input type="number" id="startingSecond" name="startingSecond" min="0" placeholder="e.g., 30" required>
 
-                <button type="submit">Add Player</button>
+                <button type="submit">Add Song</button>
             </form>
             <div id="errorMessage" class="error-message"></div>
             <div class="info-box">
@@ -197,12 +210,17 @@
         </div>
     </div>
 
+    <!-- Footer with Disclaimer -->
+    <footer>
+        <p><strong>Disclaimer:</strong> The information on this site is provided for convenience and entertainment purposes only. While we strive to update the walkout song selections and player details before each game, changes may occur without notice. For the most accurate and up-to-date information, please consult your head coach at the field. This site was created by the parent of player #26. We are not responsible for any errors, omissions, or discrepancies in the information provided. This site and its content are not intended for use in sports betting, gambling, or any related activities. Any such use is strictly prohibited.</p>
+    </footer>
+
     <script>
         let isAdmin = false;
         const SECRET_CODE = "kickapoo2025";
         const TIMEOUT = 60 * 1000;
         let lastAdditionTime = null;
-        const GOOGLE_SHEETS_API = "https://script.google.com/macros/s/AKfycbzT6XN6Re9il2J-JWYL27ZUhEF1tLHHd2pYt5HQdVtY0eWeTo52NzRZB1kJQFEBkKs/exec";
+        const GOOGLE_SHEETS_API = "https://script.google.com/macros/s/AKfycbxK7tApb4dq_ZbuOwnCwdkPYWclo6EMkdVTq_T5tQxjOjytN84lbeH6duTfbzRv8wes/exec";
 
         // Load songs from Google Sheets when the page loads
         document.addEventListener("DOMContentLoaded", () => {
@@ -226,7 +244,7 @@
             }
         }
 
-        // Add a song to Google Sheets using a hidden form submission to bypass CORS
+        // Add a song to Google Sheets using a pure form submission
         function addSong(event) {
             event.preventDefault();
 
@@ -301,37 +319,24 @@
 
                 document.body.appendChild(form);
 
-                // Submit the form and handle the response
-                fetch(GOOGLE_SHEETS_API, {
-                    method: 'POST',
-                    body: new FormData(form),
-                    mode: 'cors',
-                    redirect: 'follow'
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.text().then(errorText => {
-                            throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
-                        });
-                    }
-                    return response.json();
-                })
-                .then(updatedSongs => {
-                    if (updatedSongs.error) {
-                        throw new Error(`Server error: ${updatedSongs.error}`);
-                    }
-                    lastAdditionTime = new Date().getTime();
-                    displaySongs(updatedSongs);
-                    document.getElementById("songForm").reset();
-                    document.getElementById("errorMessage").textContent = "";
-                })
-                .catch(error => {
-                    console.error("Error adding song:", error);
-                    document.getElementById("errorMessage").textContent = `Error adding song: ${error.message}. Check console for details.`;
-                })
-                .finally(() => {
-                    document.body.removeChild(form);
-                });
+                // Use form.submit() instead of fetch to avoid CORS issues in Chrome
+                form.submit();
+
+                // After submitting, we can't directly handle the response due to form submission
+                // Instead, wait a moment and then fetch the updated songs
+                setTimeout(() => {
+                    fetchSongs().then(updatedSongs => {
+                        lastAdditionTime = new Date().getTime();
+                        displaySongs(updatedSongs);
+                        document.getElementById("songForm").reset();
+                        document.getElementById("errorMessage").textContent = "";
+                    }).catch(error => {
+                        console.error("Error fetching songs after adding:", error);
+                        document.getElementById("errorMessage").textContent = `Error after adding song: ${error.message}. Check console for details.`;
+                    }).finally(() => {
+                        document.body.removeChild(form);
+                    });
+                }, 1000); // Wait 1 second to allow the POST to complete
             }).catch(error => {
                 console.error("Error fetching songs before adding:", error);
                 document.getElementById("errorMessage").textContent = `Error adding song: ${error.message}. Check console for details.`;
@@ -360,27 +365,24 @@
 
                         document.body.appendChild(form);
 
-                        const response = await fetch(GOOGLE_SHEETS_API, {
-                            method: 'POST',
-                            body: new FormData(form),
-                            mode: 'cors',
-                            redirect: 'follow'
-                        });
-                        if (!response.ok) {
-                            const errorText = await response.text();
-                            throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
-                        }
-                        const updatedSongs = await response.json();
-                        if (updatedSongs.error) {
-                            throw new Error(`Server error: ${updatedSongs.error}`);
-                        }
-                        displaySongs(updatedSongs);
+                        // Use form.submit() instead of fetch
+                        form.submit();
+
+                        // Wait and then fetch updated songs
+                        setTimeout(() => {
+                            fetchSongs().then(updatedSongs => {
+                                displaySongs(updatedSongs);
+                            }).catch(error => {
+                                console.error("Error fetching songs after deleting:", error);
+                                document.getElementById("errorMessage").textContent = `Error after deleting song: ${error.message}. Check console for details.`;
+                            }).finally(() => {
+                                const form = document.querySelector('form');
+                                if (form) document.body.removeChild(form);
+                            });
+                        }, 1000);
                     } catch (error) {
                         console.error("Error deleting song:", error);
                         document.getElementById("errorMessage").textContent = `Error deleting song: ${error.message}. Check console for details.`;
-                    } finally {
-                        const form = document.querySelector('form');
-                        if (form) document.body.removeChild(form);
                     }
                 }
             } else {
@@ -463,28 +465,25 @@
 
                         document.body.appendChild(form);
 
-                        const response = await fetch(GOOGLE_SHEETS_API, {
-                            method: 'POST',
-                            body: new FormData(form),
-                            mode: 'cors',
-                            redirect: 'follow'
-                        });
-                        if (!response.ok) {
-                            const errorText = await response.text();
-                            throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
-                        }
-                        const updatedSongs = await response.json();
-                        if (updatedSongs.error) {
-                            throw new Error(`Server error: ${updatedSongs.error}`);
-                        }
-                        lastAdditionTime = currentTime;
-                        displaySongs(updatedSongs);
+                        // Use form.submit() instead of fetch
+                        form.submit();
+
+                        // Wait and then fetch updated songs
+                        setTimeout(() => {
+                            fetchSongs().then(updatedSongs => {
+                                lastAdditionTime = currentTime;
+                                displaySongs(updatedSongs);
+                            }).catch(error => {
+                                console.error("Error fetching songs after editing:", error);
+                                document.getElementById("errorMessage").textContent = `Error after editing song: ${error.message}. Check console for details.`;
+                            }).finally(() => {
+                                const form = document.querySelector('form');
+                                if (form) document.body.removeChild(form);
+                            });
+                        }, 1000);
                     } catch (error) {
                         console.error("Error editing song:", error);
                         document.getElementById("errorMessage").textContent = `Error editing song: ${error.message}. Check console for details.`;
-                    } finally {
-                        const form = document.querySelector('form');
-                        if (form) document.body.removeChild(form);
                     }
                 }
             } else {
@@ -516,7 +515,7 @@
             const songList = document.getElementById("songList");
             songList.innerHTML = "";
             if (!songs || songs.length === 0) {
-                songList.innerHTML = "<p>No players entered yet.</p>";
+                songList.innerHTML = "<p>No songs selected yet.</p>";
             } else {
                 // Sort songs by battingOrder (ascending)
                 songs.sort((a, b) => parseInt(a.battingOrder) - parseInt(b.battingOrder));
