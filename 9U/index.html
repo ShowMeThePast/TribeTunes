@@ -7,11 +7,10 @@
     <style>
         body {
             font-family: 'Impact', Arial, sans-serif;
-            background: linear-gradient(180deg, #0f0703 0%, #1f1209 100%);
-            color: #F3BB21;
+            background: #8C5944; /* Mocha Mousse */
+            color: #CC9A00; /* Mustard Yellow */
             margin: 0;
             padding: 0;
-            overflow-x: hidden;
             position: relative;
             min-height: 100vh;
         }
@@ -22,174 +21,123 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: url('https://www.transparenttextures.com/patterns/molten-cracks.png') repeat, url('https://www.pngall.com/wp-content/uploads/5/Baseball-Diamond.png') no-repeat center;
+            background: url('https://www.transparenttextures.com/patterns/scorched.png') repeat, url('https://www.pngall.com/wp-content/uploads/5/Baseball-Diamond.png') no-repeat center;
             background-size: 300px, 75%;
-            opacity: 0.6;
-            animation: crackSpread 30s linear infinite;
+            opacity: 0.4;
             z-index: -1;
-        }
-        @keyframes crackSpread {
-            0% { background-position: 0 0, center; }
-            100% { background-position: 300px 300px, center; }
-        }
-        body::after {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(255, 20, 20, 0.4) 0%, transparent 50%);
-            animation: bloodSky 3s ease-in-out infinite;
-            z-index: -1;
-        }
-        @keyframes bloodSky {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 0.8; }
         }
         header {
-            background: url('https://www.transparenttextures.com/patterns/jagged-metal.png');
+            background: url('https://www.transparenttextures.com/patterns/rusted-steel.png');
             background-size: cover;
-            color: #F3BB21;
-            padding: 70px 20px;
+            color: #CC9A00;
+            padding: 50px 20px;
             text-align: center;
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.9);
-            border-bottom: 12px solid #ff1414;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
+            border-bottom: 10px solid #ff1414; /* Blood Red */
             position: relative;
-            overflow: hidden;
         }
         header::after {
             content: '💀';
             position: absolute;
-            top: 20px;
-            right: 30px;
-            font-size: 5em;
+            top: 15px;
+            right: 25px;
+            font-size: 4em;
             color: #ff1414;
-            text-shadow: 0 0 25px #F3BB21;
-            animation: skullPulse 1.5s infinite;
-        }
-        @keyframes skullPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            text-shadow: 0 0 20px #CC9A00;
         }
         header h1 {
             margin: 0;
-            font-size: 6em;
+            font-size: 5em;
             text-transform: uppercase;
-            letter-spacing: 8px;
-            text-shadow: 0 0 30px #ff1414, 0 0 60px #ff1414, 0 0 90px #ff1414;
-            animation: acidDrip 2s ease-in-out infinite;
-        }
-        @keyframes acidDrip {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(10px); }
+            letter-spacing: 6px;
+            text-shadow: 0 0 20px #ff1414;
         }
         .header-subtitle {
-            font-size: 2em;
-            margin-top: 25px;
+            font-size: 1.8em;
+            margin-top: 15px;
             font-style: italic;
-            color: #F3BB21;
-            text-shadow: 0 0 20px #ff1414;
+            text-shadow: 0 0 15px #ff1414;
         }
         .bat-icon {
             position: absolute;
-            top: 25px;
-            left: 25px;
-            width: 100px;
+            top: 20px;
+            left: 20px;
+            width: 90px;
             transform: rotate(-45deg);
-            filter: drop-shadow(0 0 25px #ff1414) brightness(1.4);
+            filter: drop-shadow(0 0 20px #ff1414);
         }
         .main-container {
             max-width: 1400px;
-            margin: 70px auto;
+            margin: 50px auto;
             padding: 0 10px;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-            gap: 35px;
+            gap: 30px;
         }
         .player-card {
-            background: url('https://www.transparenttextures.com/patterns/rusted-steel.png');
+            background: url('https://www.transparenttextures.com/patterns/metal-rivets.png');
             background-size: cover;
-            border: 10px solid #F3BB21;
+            border: 8px solid #CC9A00;
             border-radius: 15px;
-            padding: 35px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.9), inset 0 0 25px #ff1414;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.9);
             position: relative;
-            height: 320px;
+            height: 300px;
             background-color: rgba(30, 30, 30, 0.9);
             overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .player-card:hover, .player-card.touched {
-            transform: scale(1.12);
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 1), inset 0 0 30px #ff1414;
         }
         .player-card::before {
-            content: '🔗';
+            content: '⚡';
             position: absolute;
             top: 10px;
             left: 10px;
             font-size: 2em;
-            color: #F3BB21;
-            text-shadow: 0 0 15px #ff1414;
-            animation: chainSwing 2s infinite;
-        }
-        @keyframes chainSwing {
-            0%, 100% { transform: rotate(0deg); }
-            50% { transform: rotate(10deg); }
+            color: #ff1414;
+            text-shadow: 0 0 15px #CC9A00;
         }
         .batting-order {
             position: absolute;
-            top: 25px;
-            right: 25px;
+            top: 20px;
+            right: 20px;
             background: #fff url('https://www.pngall.com/wp-content/uploads/5/Baseball-PNG-Free-Download.png') center/cover no-repeat;
             color: #ff1414;
             font-size: 3.5em;
             font-weight: bold;
-            width: 110px;
-            height: 110px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8), inset 0 0 20px #ff1414;
-            border: 5px dashed #ff1414;
-            animation: blastFuse 0.8s infinite;
-        }
-        @keyframes blastFuse {
-            0%, 100% { transform: scale(1); box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8), inset 0 0 20px #ff1414; }
-            50% { transform: scale(1.1); box-shadow: 0 15px 35px rgba(255, 20, 20, 0.8), inset 0 0 25px #ff1414; }
+            border: 5px solid #ff1414;
         }
         .player-name {
             font-size: 2.8em;
             font-weight: bold;
-            color: #F3BB21;
+            color: #CC9A00;
             margin: 20px 0 5px;
             text-transform: uppercase;
-            text-shadow: 0 0 20px #ff1414, 0 0 40px #ff1414;
-            animation: slashFlicker 0.1s infinite;
+            text-shadow: 0 0 15px #ff1414;
         }
         .player-number {
             font-size: 1.8em;
-            color: #F3BB21;
+            color: #CC9A00;
             font-weight: bold;
-            text-shadow: 0 0 15px #ff1414;
+            text-shadow: 0 0 10px #ff1414;
         }
         .position {
             font-size: 2em;
-            color: #F3BB21;
+            color: #CC9A00;
             margin: 5px 0;
             font-style: italic;
-            text-shadow: 0 0 15px #ff1414;
+            text-shadow: 0 0 10px #ff1414;
         }
         .song-display {
             width: 100%;
             height: 70px;
-            background: #000 url('https://www.transparenttextures.com/patterns/blood-smeared.png');
-            background-size: cover;
-            color: #F3BB21;
+            background: #000 url('https://www.transparenttextures.com/patterns/cracked.png');
+            color: #CC9A00;
             font-size: 1.6em;
             font-family: 'Courier New', monospace;
             text-transform: uppercase;
@@ -197,25 +145,20 @@
             bottom: 20px;
             left: 0;
             padding: 10px 0;
-            box-shadow: inset 0 0 25px #ff1414, 0 0 30px #ff1414;
-            border: 5px solid #F3BB21;
+            box-shadow: 0 0 20px #ff1414;
+            border: 5px solid #ff1414;
             text-align: center;
             line-height: 1.1;
-            animation: goreGlow 0.25s infinite;
-        }
-        @keyframes goreGlow {
-            0%, 100% { box-shadow: inset 0 0 25px #ff1414, 0 0 30px #ff1414; }
-            50% { box-shadow: inset 0 0 20px #ff1414, 0 0 25px #ff1414; }
         }
         footer {
             text-align: center;
-            padding: 35px;
+            padding: 30px;
             font-size: 1.2em;
-            color: #F3BB21;
-            text-shadow: 0 0 20px #ff1414;
+            color: #CC9A00;
+            text-shadow: 0 0 15px #ff1414;
         }
         @media (max-width: 600px) {
-            header h1 { font-size: 4.5em; }
+            header h1 { font-size: 4em; }
             .header-subtitle { font-size: 1.5em; }
             .bat-icon { width: 70px; }
             .player-card { height: 280px; }
@@ -224,11 +167,6 @@
             .player-number { font-size: 1.5em; }
             .position { font-size: 1.6em; }
             .song-display { font-size: 1.3em; height: 60px; }
-        }
-        @media not all and (min-resolution: 0.001dpcm) {
-            .player-card:hover, .player-card.touched { transform: none; }
-            .batting-order { animation: none; }
-            .player-name, header::after, .song-display { animation: none; }
         }
     </style>
 </head>
@@ -254,7 +192,6 @@
 
         document.addEventListener("DOMContentLoaded", function() {
             fetchPlayers();
-            setupTouchEvents();
         });
 
         async function fetchPlayers() {
@@ -271,7 +208,7 @@
                 displayPlayers(players);
             } catch (error) {
                 console.error("Error fetching players:", error);
-                document.getElementById("playerList").innerHTML = "<p style='color: #F3BB21; text-align: center;'>Error loading lineup: " + error.message + "</p>";
+                document.getElementById("playerList").innerHTML = "<p style='color: #CC9A00; text-align: center;'>Error loading lineup: " + error.message + "</p>";
             }
         }
 
@@ -298,15 +235,6 @@
                     playerList.appendChild(playerCard);
                 });
             }
-        }
-
-        function setupTouchEvents() {
-            const cards = document.querySelectorAll(".player-card");
-            cards.forEach(card => {
-                card.addEventListener("touchstart", function() {
-                    this.classList.toggle("touched");
-                });
-            });
         }
     </script>
 </body>
