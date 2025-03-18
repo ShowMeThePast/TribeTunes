@@ -24,140 +24,143 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: url('https://www.transparenttextures.com/patterns/rusted-metal-heavy.png') repeat, url('https://www.transparenttextures.com/patterns/tire-treads.png') repeat;
-            background-size: 500px, 300px;
-            opacity: 0.5;
+            background: url('https://www.transparenttextures.com/patterns/rusted-metal-heavy.png') repeat, url('https://www.transparenttextures.com/patterns/cracked-earth.png') repeat;
+            background-size: 600px, 400px;
+            opacity: 0.6;
             z-index: -1;
         }
         header {
             background: url('https://www.transparenttextures.com/patterns/scorched-metal.png');
             background-size: cover;
             color: #D7B358;
-            padding: 20px 10px;
+            padding: 25px 10px;
             text-align: center;
             width: 100%;
-            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.9);
-            border-bottom: 10px solid #ff1414; /* Red only here */
-            border-top: 10px solid #ff1414;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
+            border-bottom: 12px solid #ff1414; /* Red only here */
+            border-top: 12px solid #ff1414;
             position: relative;
+            border-image: url('https://www.transparenttextures.com/patterns/jagged-metal.png') 12 stretch;
         }
         header h1 {
             margin: 0;
-            font-size: 3em;
+            font-size: 3.5em;
             text-transform: uppercase;
-            letter-spacing: 5px;
-            text-shadow: 0 0 20px #4E321E, 0 0 10px #ff1414;
+            letter-spacing: 6px;
+            text-shadow: 0 0 25px #4E321E, 0 0 15px #ff1414;
             line-height: 1;
         }
         .header-subtitle {
-            font-size: 1.1em;
+            font-size: 1.3em;
             margin-top: 5px;
             font-style: italic;
-            text-shadow: 0 0 15px #4E321E, 0 0 5px #ff1414;
+            text-shadow: 0 0 20px #4E321E, 0 0 10px #ff1414;
         }
         .main-container {
             width: 100%;
-            max-width: 400px;
-            padding: 15px 10px;
+            max-width: 420px;
+            padding: 20px 10px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 20px;
         }
         .player-card {
-            background: url('https://www.transparenttextures.com/patterns/rusted-steel.png');
+            background: url('https://www.transparenttextures.com/patterns/metal-scratches.png');
             background-size: cover;
-            border: 8px solid #D7B358;
+            border: 10px solid #D7B358;
             border-radius: 0;
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9), inset 0 0 15px #4E321E;
-            background-color: rgba(78, 50, 30, 0.8); /* #4E321E with opacity */
+            padding: 25px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9), inset 0 0 20px #4E321E;
+            background-color: rgba(78, 50, 30, 0.9); /* #4E321E with opacity */
             position: relative;
             overflow: hidden;
+            border-image: url('https://www.transparenttextures.com/patterns/spikes.png') 10 stretch;
         }
         .batting-order {
             position: absolute;
-            top: -20px;
-            right: -20px;
-            background: url('https://www.transparenttextures.com/patterns/metal-scratches.png');
+            top: -30px;
+            right: -30px;
+            background: url('https://www.transparenttextures.com/patterns/rusted-steel.png');
             background-size: cover;
             color: #D7B358;
-            font-size: 3em;
+            font-size: 3.5em;
             font-weight: bold;
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            border-radius: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.8);
-            border: 6px solid #D7B358;
-            text-shadow: 0 0 15px #4E321E;
-            transform: rotate(15deg);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
+            border: 8px solid #D7B358;
+            text-shadow: 0 0 20px #4E321E;
+            transform: rotate(20deg);
         }
         .player-name {
-            font-size: 2.2em;
+            font-size: 2.5em;
             font-weight: bold;
             color: #D7B358;
             margin: 0 0 5px;
             text-transform: uppercase;
-            text-shadow: 0 0 15px #4E321E;
+            text-shadow: 0 0 20px #4E321E;
             line-height: 1;
         }
         .player-number {
-            font-size: 1.5em;
+            font-size: 1.8em;
             color: #D7B358;
             font-weight: bold;
-            text-shadow: 0 0 10px #4E321E;
+            text-shadow: 0 0 15px #4E321E;
             margin: 5px 0;
         }
         .position {
-            font-size: 1.7em;
+            font-size: 2em;
             color: #D7B358;
             margin: 5px 0;
             font-style: italic;
-            text-shadow: 0 0 10px #4E321E;
+            text-shadow: 0 0 15px #4E321E;
         }
         .song {
-            font-size: 1.5em;
+            font-size: 1.8em;
             color: #D7B358;
             margin: 5px 0;
-            text-shadow: 0 0 10px #4E321E;
+            text-shadow: 0 0 15px #4E321E;
         }
         footer {
             text-align: center;
-            padding: 20px 10px;
-            font-size: 1em;
+            padding: 25px 10px;
+            font-size: 1.2em;
             color: #D7B358;
-            text-shadow: 0 0 15px #4E321E;
+            text-shadow: 0 0 20px #4E321E;
             background: url('https://www.transparenttextures.com/patterns/scorched-metal.png');
             background-size: cover;
-            border-top: 8px solid #D7B358;
-            box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.9);
+            border-top: 10px solid #D7B358;
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.9);
             width: 100%;
             margin-top: auto;
+            border-image: url('https://www.transparenttextures.com/patterns/jagged-metal.png') 10 stretch;
         }
         @media (min-width: 600px) {
-            header h1 { font-size: 4em; }
-            .header-subtitle { font-size: 1.4em; }
-            .main-container { max-width: 600px; padding: 20px 15px; gap: 20px; }
-            .player-card { padding: 25px; }
-            .batting-order { font-size: 3.5em; width: 100px; height: 100px; top: -25px; right: -25px; }
-            .player-name { font-size: 2.5em; }
-            .player-number { font-size: 1.8em; }
-            .position { font-size: 2em; }
-            .song { font-size: 1.8em; }
-            footer { padding: 25px 15px; font-size: 1.2em; }
+            header h1 { font-size: 4.5em; }
+            .header-subtitle { font-size: 1.6em; }
+            .main-container { max-width: 600px; padding: 25px 15px; gap: 25px; }
+            .player-card { padding: 30px; }
+            .batting-order { font-size: 4em; width: 120px; height: 120px; top: -35px; right: -35px; }
+            .player-name { font-size: 3em; }
+            .player-number { font-size: 2em; }
+            .position { font-size: 2.2em; }
+            .song { font-size: 2em; }
+            footer { padding: 30px 15px; font-size: 1.4em; }
         }
         @media (min-width: 900px) {
             .main-container {
                 max-width: 900px;
                 display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+                grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
                 padding: 30px 20px;
                 gap: 30px;
             }
-            header h1 { font-size: 5em; }
-            .header-subtitle { font-size: 1.6em; }
+            header h1 { font-size: 5.5em; }
+            .header-subtitle { font-size: 1.8em; }
         }
     </style>
 </head>
