@@ -21,118 +21,121 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: url('https://www.transparenttextures.com/patterns/cracked-asphalt.png') repeat, url('https://www.pngall.com/wp-content/uploads/5/Baseball-Diamond.png') no-repeat center;
-            background-size: 400px, 75%;
-            opacity: 0.2;
+            background: url('https://www.transparenttextures.com/patterns/burnt-ground.png') repeat, url('https://www.pngall.com/wp-content/uploads/5/Baseball-Diamond.png') no-repeat center;
+            background-size: 400px, 70%;
+            opacity: 0.3;
             z-index: -1;
         }
         header {
-            background: url('https://www.transparenttextures.com/patterns/scorched-steel.png');
+            background: url('https://www.transparenttextures.com/patterns/hammered-metal.png');
             background-size: cover;
             color: #D7B358;
-            padding: 50px 20px;
+            padding: 60px 20px;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
-            border-bottom: 10px solid #D7B358;
-            border-top: 10px solid #D7B358;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9);
+            border-bottom: 12px solid #D7B358;
+            border-top: 12px solid #D7B358;
             position: relative;
+            border-image: url('https://www.transparenttextures.com/patterns/spikes.png') 12 stretch;
         }
         header h1 {
             margin: 0;
-            font-size: 5em;
+            font-size: 6em;
             text-transform: uppercase;
-            letter-spacing: 6px;
-            text-shadow: 0 0 20px #4E321E;
+            letter-spacing: 8px;
+            text-shadow: 0 0 25px #4E321E, 0 0 10px #ff1414; /* Blood Red accent */
         }
         .header-subtitle {
-            font-size: 1.8em;
+            font-size: 2em;
             margin-top: 15px;
             font-style: italic;
-            text-shadow: 0 0 15px #4E321E;
+            text-shadow: 0 0 20px #4E321E, 0 0 8px #ff1414;
         }
         .main-container {
             max-width: 1200px;
-            margin: 50px auto;
+            margin: 60px auto;
             padding: 0 10px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 35px;
         }
         .player-card {
-            background: url('https://www.transparenttextures.com/patterns/rusted-rivets.png');
+            background: url('https://www.transparenttextures.com/patterns/rusted-metal-heavy.png');
             background-size: cover;
-            border: 8px solid #D7B358;
-            border-radius: 0; /* Sharp edges */
-            padding: 30px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.9);
+            border: 10px solid #D7B358;
+            border-radius: 0;
+            padding: 35px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.9), inset 0 0 20px #ff1414;
             position: relative;
-            height: 300px;
+            height: 320px;
             background-color: rgba(78, 50, 30, 0.9); /* #4E321E with opacity */
             overflow: hidden;
         }
         .batting-order {
             position: absolute;
-            top: 20px;
-            right: 20px;
+            top: 25px;
+            right: 25px;
             background: #4E321E;
             color: #D7B358;
-            font-size: 3.5em;
+            font-size: 4em;
             font-weight: bold;
-            width: 100px;
-            height: 100px;
+            width: 110px;
+            height: 110px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8), inset 0 0 15px #D7B358;
-            border: 6px solid #D7B358;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), inset 0 0 20px #ff1414;
+            border: 8px solid #D7B358;
+            text-shadow: 0 0 15px #ff1414;
         }
         .player-name {
-            font-size: 2.8em;
+            font-size: 3em;
             font-weight: bold;
             color: #D7B358;
-            margin: 20px 0 5px;
+            margin: 25px 0 5px;
             text-transform: uppercase;
-            text-shadow: 0 0 15px #4E321E;
+            text-shadow: 0 0 20px #4E321E, 0 0 10px #ff1414;
         }
         .player-number {
-            font-size: 1.8em;
+            font-size: 2em;
             color: #D7B358;
             font-weight: bold;
-            text-shadow: 0 0 10px #4E321E;
+            text-shadow: 0 0 15px #4E321E, 0 0 8px #ff1414;
         }
         .position {
-            font-size: 2em;
+            font-size: 2.2em;
             color: #D7B358;
             margin: 5px 0;
             font-style: italic;
-            text-shadow: 0 0 10px #4E321E;
+            text-shadow: 0 0 15px #4E321E, 0 0 8px #ff1414;
         }
         .song {
-            font-size: 1.6em;
+            font-size: 1.8em;
             color: #D7B358;
             margin: 5px 0;
-            text-shadow: 0 0 10px #4E321E;
+            text-shadow: 0 0 15px #4E321E, 0 0 8px #ff1414;
         }
         footer {
             text-align: center;
-            padding: 30px;
-            font-size: 1.2em;
+            padding: 35px;
+            font-size: 1.4em;
             color: #D7B358;
-            text-shadow: 0 0 15px #4E321E;
-            background: url('https://www.transparenttextures.com/patterns/scorched-steel.png');
+            text-shadow: 0 0 20px #4E321E, 0 0 10px #ff1414;
+            background: url('https://www.transparenttextures.com/patterns/hammered-metal.png');
             background-size: cover;
-            border-top: 8px solid #D7B358;
+            border-top: 10px solid #D7B358;
+            box-shadow: 0 -15px 40px rgba(0, 0, 0, 0.9);
         }
         @media (max-width: 600px) {
-            header h1 { font-size: 4em; }
-            .header-subtitle { font-size: 1.5em; }
-            .player-card { height: 280px; }
-            .batting-order { font-size: 3em; width: 90px; height: 90px; }
-            .player-name { font-size: 2.2em; }
-            .player-number { font-size: 1.5em; }
-            .position { font-size: 1.6em; }
-            .song { font-size: 1.3em; }
+            header h1 { font-size: 4.5em; }
+            .header-subtitle { font-size: 1.6em; }
+            .player-card { height: 300px; }
+            .batting-order { font-size: 3.5em; width: 100px; height: 100px; }
+            .player-name { font-size: 2.5em; }
+            .player-number { font-size: 1.6em; }
+            .position { font-size: 1.8em; }
+            .song { font-size: 1.4em; }
         }
     </style>
 </head>
