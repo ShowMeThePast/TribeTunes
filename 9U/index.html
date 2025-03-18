@@ -220,7 +220,7 @@
         const SECRET_CODE = "kickapoo2025";
         const TIMEOUT = 60 * 1000;
         let lastAdditionTime = null;
-        const GOOGLE_SHEETS_API = "https://script.google.com/macros/s/AKfycbxK7tApb4dq_ZbuOwnCwdkPYWclo6EMkdVTq_T5tQxjOjytN84lbeH6duTfbzRv8wes/exec";
+        const GOOGLE_SHEETS_API = "https://script.google.com/macros/s/AKfycbxQjRuwSjsNruROYejtn9dDbr9SrbE7J50THS8A9trmNDs6XRmjk8KQ-dQGkCs9VoTP/exec";
 
         // Load songs from Google Sheets when the page loads
         document.addEventListener("DOMContentLoaded", () => {
@@ -319,11 +319,10 @@
 
                 document.body.appendChild(form);
 
-                // Use form.submit() instead of fetch to avoid CORS issues in Chrome
+                // Use form.submit() to avoid CORS issues
                 form.submit();
 
-                // After submitting, we can't directly handle the response due to form submission
-                // Instead, wait a moment and then fetch the updated songs
+                // Wait 2 seconds (increased delay for reliability) and then fetch updated songs
                 setTimeout(() => {
                     fetchSongs().then(updatedSongs => {
                         lastAdditionTime = new Date().getTime();
@@ -336,7 +335,7 @@
                     }).finally(() => {
                         document.body.removeChild(form);
                     });
-                }, 1000); // Wait 1 second to allow the POST to complete
+                }, 2000);
             }).catch(error => {
                 console.error("Error fetching songs before adding:", error);
                 document.getElementById("errorMessage").textContent = `Error adding song: ${error.message}. Check console for details.`;
@@ -365,10 +364,10 @@
 
                         document.body.appendChild(form);
 
-                        // Use form.submit() instead of fetch
+                        // Use form.submit()
                         form.submit();
 
-                        // Wait and then fetch updated songs
+                        // Wait 2 seconds and then fetch updated songs
                         setTimeout(() => {
                             fetchSongs().then(updatedSongs => {
                                 displaySongs(updatedSongs);
@@ -379,7 +378,7 @@
                                 const form = document.querySelector('form');
                                 if (form) document.body.removeChild(form);
                             });
-                        }, 1000);
+                        }, 2000);
                     } catch (error) {
                         console.error("Error deleting song:", error);
                         document.getElementById("errorMessage").textContent = `Error deleting song: ${error.message}. Check console for details.`;
@@ -465,13 +464,13 @@
 
                         document.body.appendChild(form);
 
-                        // Use form.submit() instead of fetch
+                        // Use form.submit()
                         form.submit();
 
-                        // Wait and then fetch updated songs
+                        // Wait 2 seconds and then fetch updated songs
                         setTimeout(() => {
                             fetchSongs().then(updatedSongs => {
-                                lastAdditionTime = currentTime;
+                                lastAdditionTime = new Date().getTime();
                                 displaySongs(updatedSongs);
                             }).catch(error => {
                                 console.error("Error fetching songs after editing:", error);
@@ -480,7 +479,7 @@
                                 const form = document.querySelector('form');
                                 if (form) document.body.removeChild(form);
                             });
-                        }, 1000);
+                        }, 2000);
                     } catch (error) {
                         console.error("Error editing song:", error);
                         document.getElementById("errorMessage").textContent = `Error editing song: ${error.message}. Check console for details.`;
