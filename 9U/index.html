@@ -163,53 +163,7 @@
             </div>
             <button id="adminButton" class="admin-button" onclick="toggleAdminMode()">26</button>
         </div>
-
-        <!-- Form for Submitting Songs -->
-        <div class="form-container">
-            <h2>Player Details</h2>
-            <p>Enter the player's details below and their walkout song for their next game!</p>
-
-            <!-- Form for Song Details -->
-            <form id="songForm" onsubmit="addSong(event)">
-                <label for="childName">Child's Name:</label>
-                <input type="text" id="childName" name="childName" placeholder="e.g., Alex Smith" required>
-
-                <label for="childNumber">Child's Number:</label>
-                <input type="number" id="childNumber" name="childNumber" min="0" max="99" placeholder="e.g., 12" required>
-
-                <label for="startingPosition">Starting Position:</label>
-                <input type="text" id="startingPosition" name="startingPosition" placeholder="e.g., Pitcher" required>
-
-                <label for="battingOrder">Batting Order:</label>
-                <input type="number" id="battingOrder" name="battingOrder" min="1" max="9" placeholder="e.g., 1" required>
-
-                <label for="walkoutSongName">Walkout Song Name:</label>
-                <input type="text" id="walkoutSongName" name="walkoutSongName" placeholder="e.g., Sweet2023" required>
-
-                <label for="walkoutSongArtistName">Walkout Song Artist Name:</label>
-                <input type="text" id="walkoutSongArtistName" name="walkoutSongArtistName" placeholder="e.g., Artist123" required>
-
-                <label for="startingSecond">Starting Second:</label>
-                <input type="number" id="startingSecond" name="startingSecond" min="0" placeholder="e.g., 30" required>
-
-                <button type="submit">Add Player</button>
-            </form>
-            <div id="errorMessage" class="error-message"></div>
-            <div class="info-box">
-                <p><strong>Input Rules:</strong></p>
-                <ul>
-                    <li>Child's Name and Starting Position must contain only letters (a-z, A-Z) and spaces.</li>
-                    <li>Walkout Song Name and Walkout Song Artist Name can contain letters (a-z, A-Z), numbers (0-9), and spaces, but no special characters.</li>
-                    <li>Child's Number must be a number between 0 and 99.</li>
-                    <li>Batting Order must be a number between 1 and 9.</li>
-                    <li>Starting Second must contain only numbers (0-9).</li>
-                    <li>No special characters are allowed in any field.</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <!-- Footer with Disclaimer -->
+      <!-- Footer with Disclaimer -->
     <footer>
         <p><strong>Disclaimer:</strong> The information on this site is provided for convenience and entertainment purposes only. While we strive to update the walkout song selections and player details before each game, changes may occur without notice. For the most accurate and up-to-date information, please consult your head coach at the field. This site was created by the parent of player #26. We are not responsible for any errors, omissions, or discrepancies in the information provided. This site and its content are not intended for use in sports betting, gambling, or any related activities. Any such use is strictly prohibited.</p>
     </footer>
