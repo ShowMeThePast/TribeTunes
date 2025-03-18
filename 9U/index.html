@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kickapoo Tribe Baseball - Walkout Song Picker</title>
+    <title>Kickapoo Tribe Baseball - 10U</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -151,14 +151,13 @@
 </head>
 <body>
     <header>
-        <h1>Kickapoo Tribe Baseball</h1>
-        <p>Walkout Song Picker for Parents</p>
+        <h1>Kickapoo Tribe Baseball - 10U </h1>
     </header>
 
     <div class="main-container">
         <!-- Sidebar for Displaying Songs -->
         <div class="sidebar">
-            <h2>Selected Walkout Songs</h2>
+            <h2>Player Details</h2>
             <div class="song-list-container">
                 <div id="songList"></div>
             </div>
@@ -167,8 +166,8 @@
 
         <!-- Form for Submitting Songs -->
         <div class="form-container">
-            <h2>Pick Your Child's Walkout Song</h2>
-            <p>Enter the song details below to set your child's walkout song for their next game!</p>
+            <h2>Player Details</h2>
+            <p>Enter the player's details below and their walkout song for their next game!</p>
 
             <!-- Form for Song Details -->
             <form id="songForm" onsubmit="addSong(event)">
@@ -193,7 +192,7 @@
                 <label for="startingSecond">Starting Second:</label>
                 <input type="number" id="startingSecond" name="startingSecond" min="0" placeholder="e.g., 30" required>
 
-                <button type="submit">Add Song</button>
+                <button type="submit">Add Player</button>
             </form>
             <div id="errorMessage" class="error-message"></div>
             <div class="info-box">
