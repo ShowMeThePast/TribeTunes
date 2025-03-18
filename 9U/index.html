@@ -36,15 +36,6 @@
             border-bottom: 8px solid #D7B358;
             position: relative;
         }
-        header::after {
-            content: '⚾';
-            position: absolute;
-            top: 15px;
-            right: 25px;
-            font-size: 3em;
-            color: #D7B358;
-            text-shadow: 0 0 15px #4E321E;
-        }
         header h1 {
             margin: 0;
             font-size: 4.5em;
@@ -57,14 +48,6 @@
             margin-top: 10px;
             font-style: italic;
             text-shadow: 0 0 10px #4E321E;
-        }
-        .bat-icon {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            width: 80px;
-            transform: rotate(-45deg);
-            filter: drop-shadow(0 0 15px #4E321E);
         }
         .main-container {
             max-width: 1200px;
@@ -87,7 +70,7 @@
             overflow: hidden;
         }
         .player-card::before {
-            content: '🏍️';
+            content: '🏏';
             position: absolute;
             top: 10px;
             left: 10px;
@@ -133,22 +116,11 @@
             font-style: italic;
             text-shadow: 0 0 8px #4E321E;
         }
-        .song-display {
-            width: 100%;
-            height: 60px;
-            background: #4E321E;
-            color: #D7B358;
+        .song {
             font-size: 1.5em;
-            font-family: 'Courier New', monospace;
-            text-transform: uppercase;
-            position: absolute;
-            bottom: 15px;
-            left: 0;
-            padding: 10px 0;
-            box-shadow: 0 0 15px #D7B358;
-            border: 4px solid #D7B358;
-            text-align: center;
-            line-height: 1.1;
+            color: #D7B358;
+            margin: 5px 0;
+            text-shadow: 0 0 8px #4E321E;
         }
         footer {
             text-align: center;
@@ -160,19 +132,17 @@
         @media (max-width: 600px) {
             header h1 { font-size: 3.5em; }
             .header-subtitle { font-size: 1.3em; }
-            .bat-icon { width: 60px; }
             .player-card { height: 260px; }
             .batting-order { font-size: 2.5em; width: 80px; height: 80px; }
             .player-name { font-size: 2em; }
             .player-number { font-size: 1.4em; }
             .position { font-size: 1.6em; }
-            .song-display { font-size: 1.2em; height: 50px; }
+            .song { font-size: 1.2em; }
         }
     </style>
 </head>
 <body>
     <header>
-        <img src="https://www.freeiconspng.com/uploads/baseball-bat-png-2.png" alt="Bat Icon" class="bat-icon">
         <h1>Kickapoo Tribe Baseball 10U Lineup</h1>
         <div class="header-subtitle" id="subtitle">Players listed in batting order for tonight's showdown</div>
     </header>
@@ -230,7 +200,7 @@
                         <div class="player-name">${player.childName}</div>
                         <div class="player-number">#${player.childNumber}</div>
                         <div class="position">Position: ${player.startingPosition}</div>
-                        <div class="song-display">🎸 ${player.walkoutSongName} by ${player.walkoutSongArtistName} - ${player.startingSecond}s</div>
+                        <div class="song">🎸 ${player.walkoutSongName} by ${player.walkoutSongArtistName} - ${player.startingSecond}s</div>
                     `;
                     playerList.appendChild(playerCard);
                 });
