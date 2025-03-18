@@ -6,14 +6,14 @@
     <title>Kickapoo Tribe Baseball - 10U Lineup</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #F3BB21;
-            color: #4E321E;
+            font-family: 'Impact', Arial, sans-serif;
+            background: linear-gradient(180deg, #2b1a0f 0%, #4E321E 100%);
+            color: #F3BB21;
             margin: 0;
             padding: 0;
             overflow-x: hidden;
-            background: linear-gradient(135deg, #F3BB21 0%, #e0a018 100%);
             position: relative;
+            min-height: 100vh;
         }
         body::before {
             content: '';
@@ -22,76 +22,77 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: url('https://www.transparenttextures.com/patterns/baseball.png') repeat, url('https://www.pngall.com/wp-content/uploads/5/Baseball-Diamond.png') no-repeat center;
-            background-size: 100px, 80%;
-            opacity: 0.2;
-            animation: moveGrass 20s linear infinite;
+            background: url('https://www.transparenttextures.com/patterns/dust.png') repeat, url('https://www.pngall.com/wp-content/uploads/5/Baseball-Diamond.png') no-repeat center;
+            background-size: 200px, 90%;
+            opacity: 0.3;
+            animation: dustMove 15s linear infinite;
             z-index: -1;
         }
-        @keyframes moveGrass {
+        @keyframes dustMove {
             0% { background-position: 0 0, center; }
-            100% { background-position: 100px 100px, center; }
+            100% { background-position: 200px 200px, center; }
         }
         header {
-            background-color: #4E321E;
+            background: url('https://www.transparenttextures.com/patterns/metal.png');
+            background-size: cover;
             color: #F3BB21;
-            padding: 40px;
+            padding: 40px 20px;
             text-align: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.8);
+            border-bottom: 5px solid #F3BB21;
             position: relative;
         }
         header h1 {
             margin: 0;
-            font-size: 4em;
+            font-size: 4.5em;
             text-transform: uppercase;
-            letter-spacing: 3px;
-            text-shadow: 0 0 10px #F3BB21, 0 0 20px #F3BB21;
-            animation: glow 2s ease-in-out infinite;
+            letter-spacing: 4px;
+            text-shadow: 0 0 15px #ff4500, 0 0 30px #ff4500;
+            animation: fireGlow 1.5s ease-in-out infinite;
         }
-        @keyframes glow {
-            0%, 100% { text-shadow: 0 0 10px #F3BB21, 0 0 20px #F3BB21; }
-            50% { text-shadow: 0 0 15px #F3BB21, 0 0 30px #F3BB21; }
+        @keyframes fireGlow {
+            0%, 100% { text-shadow: 0 0 15px #ff4500, 0 0 30px #ff4500; }
+            50% { text-shadow: 0 0 25px #ff4500, 0 0 50px #ff4500; }
         }
         .header-subtitle {
-            font-size: 1.3em;
-            margin-top: 10px;
+            font-size: 1.4em;
+            margin-top: 15px;
             font-style: italic;
             color: #F3BB21;
+            text-shadow: 0 0 5px #000;
         }
         .bat-icon {
             position: absolute;
             top: 10px;
-            left: 20px;
-            width: 50px;
-            transform: rotate(-20deg);
-            filter: drop-shadow(0 0 5px #F3BB21);
+            left: 10px;
+            width: 60px;
+            transform: rotate(-30deg);
+            filter: drop-shadow(0 0 10px #F3BB21);
         }
         .main-container {
             max-width: 1400px;
             margin: 40px auto;
-            padding: 0 20px;
+            padding: 0 10px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
         }
         .player-card {
-            background-color: white;
-            border: 4px solid #4E321E;
-            border-radius: 12px;
+            background: url('https://www.transparenttextures.com/patterns/leather.png');
+            background-size: cover;
+            border: 6px double #F3BB21;
+            border-radius: 15px;
             padding: 20px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.9), inset 0 0 10px #F3BB21;
             position: relative;
-            height: 200px;
+            height: 220px;
             transform-style: preserve-3d;
-            transition: transform 0.6s ease;
-            background-image: url('https://www.pngall.com/wp-content/uploads/5/Baseball-PNG-Free-Download.png');
-            background-size: 50%;
-            background-position: center;
-            background-repeat: no-repeat;
-            opacity: 0.9;
+            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent; /* Mobile tap fix */
         }
-        .player-card:hover {
-            transform: rotateY(180deg);
+        .player-card:hover, .player-card.touched {
+            transform: rotateY(180deg) scale(1.05);
         }
         .card-front, .card-back {
             position: absolute;
@@ -105,71 +106,77 @@
         }
         .card-front {
             z-index: 2;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
         }
         .card-back {
             transform: rotateY(180deg);
-            background-color: #4E321E;
+            background: #4E321E;
             color: #F3BB21;
             display: flex;
             flex-direction: column;
             justify-content: center;
             text-align: center;
+            border-radius: 10px;
+            box-shadow: inset 0 0 15px #F3BB21;
         }
         .batting-order {
             position: absolute;
             top: 10px;
             right: 10px;
-            background-color: #4E321E;
+            background: url('https://www.transparenttextures.com/patterns/metal.png');
+            background-size: cover;
             color: #F3BB21;
-            font-size: 2.2em;
+            font-size: 2.5em;
             font-weight: bold;
-            width: 70px;
-            height: 70px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-            animation: spin 4s linear infinite;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7), inset 0 0 10px #ff4500;
+            animation: pulse 2s infinite;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
         .player-name {
-            font-size: 1.8em;
+            font-size: 2em;
             font-weight: bold;
             color: #4E321E;
             margin: 10px 0;
             text-transform: uppercase;
+            text-shadow: 0 0 5px #F3BB21;
         }
         .player-number {
-            font-size: 1.2em;
+            font-size: 1.3em;
             color: #4E321E;
             font-weight: bold;
         }
         .position {
-            font-size: 1.4em;
+            font-size: 1.5em;
             color: #4E321E;
             margin: 5px 0;
             font-style: italic;
         }
         .walkout-song {
-            font-size: 1.2em;
-            color: #4E321E;
-            background-color: #F3BB21;
-            padding: 8px;
+            font-size: 1.3em;
+            color: #F3BB21;
+            padding: 10px;
             border-radius: 5px;
             margin-top: 10px;
         }
         .walkout-song::before {
-            content: '🎵 ';
+            content: '🎸 ';
         }
         footer {
             text-align: center;
             padding: 20px;
-            font-size: 0.8em;
-            color: #4E321E;
+            font-size: 0.9em;
+            color: #F3BB21;
+            text-shadow: 0 0 5px #000;
         }
         .sound-toggle {
             position: fixed;
@@ -177,18 +184,27 @@
             right: 20px;
             background-color: #4E321E;
             color: #F3BB21;
-            border: none;
-            padding: 10px;
-            border-radius: 5px;
+            border: 2px solid #F3BB21;
+            padding: 12px;
+            border-radius: 50%;
             cursor: pointer;
+            font-size: 1em;
+            z-index: 10;
+        }
+        @media (max-width: 600px) {
+            header h1 { font-size: 3em; }
+            .header-subtitle { font-size: 1em; }
+            .bat-icon { width: 40px; }
+            .player-card { height: 180px; }
+            .batting-order { font-size: 2em; width: 60px; height: 60px; }
+            .player-name { font-size: 1.5em; }
+            .player-number { font-size: 1em; }
+            .position { font-size: 1.2em; }
+            .walkout-song { font-size: 1em; }
         }
         @media not all and (min-resolution: 0.001dpcm) {
-            .player-card:hover {
-                transform: none;
-            }
-            .batting-order {
-                animation: none;
-            }
+            .player-card:hover, .player-card.touched { transform: none; }
+            .batting-order { animation: none; }
         }
     </style>
 </head>
@@ -196,7 +212,7 @@
     <header>
         <img src="https://www.pngall.com/wp-content/uploads/5/Baseball-Bat-PNG-Clipart.png" alt="Bat Icon" class="bat-icon">
         <h1>Kickapoo Tribe Baseball 10U Lineup</h1>
-        <div class="header-subtitle" id="subtitle">Players listed in batting order for tonight's game</div>
+        <div class="header-subtitle" id="subtitle">Players listed in batting order for tonight's showdown</div>
     </header>
 
     <div class="main-container">
@@ -204,23 +220,24 @@
     </div>
 
     <footer>
-        <p>This page is for informational purposes only. Please consult the head coach for the most up-to-date game information. Created by a player's dad—not for sports betting. Gamble responsibly.</p>
+        <p>This page is for informational purposes only. Check with the head coach for the latest game intel. Built by a player's dad—not for betting. Gamble responsibly, badasses.</p>
     </footer>
 
-    <button class="sound-toggle" onclick="toggleSound()">Sound: Off</button>
+    <button class="sound-toggle" onclick="toggleSound()">🔊 Off</button>
 
-    <audio id="crowdCheer" loop>
-        <source src="https://www.soundjay.com/crowd/crowd-cheer-1.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
+    <audio id="metalRiff" loop>
+        <source src="https://www.soundjay.com/music/heavy-metal-riff-1.mp3" type="audio/mpeg">
+        Your browser doesn’t support audio.
     </audio>
 
     <script>
         const GOOGLE_SHEETS_API = "https://script.google.com/macros/s/AKfycbzT6XN6Re9il2J-JWYL27ZUhEF1tLHHd2pYt5HQdVtY0eWeTo52NzRZB1kJQFEBkKs/exec";
         const currentDate = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-        document.getElementById('subtitle').textContent = `Players listed in batting order for ${currentDate} game`;
+        document.getElementById('subtitle').textContent = `Players listed in batting order for ${currentDate} showdown`;
 
         document.addEventListener("DOMContentLoaded", function() {
             fetchPlayers();
+            setupTouchEvents();
         });
 
         async function fetchPlayers() {
@@ -237,7 +254,7 @@
                 displayPlayers(players);
             } catch (error) {
                 console.error("Error fetching players:", error);
-                document.getElementById("playerList").innerHTML = "<p style='color: #4E321E; text-align: center;'>Error loading lineup: " + error.message + "</p>";
+                document.getElementById("playerList").innerHTML = "<p style='color: #F3BB21; text-align: center;'>Error loading lineup: " + error.message + "</p>";
             }
         }
 
@@ -271,17 +288,26 @@
             }
         }
 
-        const audio = document.getElementById("crowdCheer");
+        function setupTouchEvents() {
+            const cards = document.querySelectorAll(".player-card");
+            cards.forEach(card => {
+                card.addEventListener("touchstart", function() {
+                    this.classList.toggle("touched");
+                });
+            });
+        }
+
+        const audio = document.getElementById("metalRiff");
         const soundButton = document.querySelector(".sound-toggle");
         let isSoundOn = false;
 
         function toggleSound() {
             if (isSoundOn) {
                 audio.pause();
-                soundButton.textContent = "Sound: Off";
+                soundButton.textContent = "🔊 Off";
             } else {
                 audio.play();
-                soundButton.textContent = "Sound: On";
+                soundButton.textContent = "🔊 On";
             }
             isSoundOn = !isSoundOn;
         }
