@@ -6,12 +6,12 @@
     <title>Kickapoo Tribe Baseball - 9U Lineup</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: Arial, sans-serif; /* Fallback to sans-serif for consistency */
             background-color: #F3BB21;
             color: #4E321E;
             margin: 0;
             padding: 0;
-            background-image: url('https://www.transparenttextures.com/patterns/baseball.png'); /* Baseball texture */
+            background-image: url('https://www.transparenttextures.com/patterns/baseball.png');
             background-size: cover;
         }
         header {
@@ -57,7 +57,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: url('https://www.pngall.com/wp-content/uploads/5/Baseball-Diamond.png') no-repeat center;
+            background-image: url('https://www.pngall.com/wp-content/uploads/5/Baseball-Diamond.png');
+            background-repeat: no-repeat;
+            background-position: center;
             background-size: 50%;
             opacity: 0.1;
             z-index: 0;
@@ -70,8 +72,8 @@
             position: absolute;
             top: 10px;
             right: 10px;
-            background-color: #4E321E; /* Brown */
-            color: #F3BB21; /* Yellow */
+            background-color: #4E321E;
+            color: #F3BB21;
             font-size: 2em;
             font-weight: bold;
             width: 60px;
@@ -90,4 +92,97 @@
             text-transform: uppercase;
         }
         .player-number {
-           
+            font-size: 1.2em;
+            color: #4E321E;
+            font-weight: bold;
+        }
+        .position {
+            font-size: 1.4em;
+            color: #4E321E;
+            margin: 5px 0;
+            font-style: italic;
+        }
+        .walkout-song {
+            font-size: 1.2em;
+            color: #4E321E;
+            background-color: #F3BB21;
+            padding: 8px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .walkout-song::before {
+            content: '🎵 ';
+        }
+        /* Fallback for older browsers */
+        @media not all and (min-resolution: 0.001dpcm) { /* Safari fallback */
+            .player-card:hover {
+                transform: none; /* Disable transform if unsupported */
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Kickapoo Tribe Baseball 9U Lineup</h1>
+    </header>
+
+    <div class="main-container">
+        <div id="playerList"></div>
+    </div>
+
+    <script>
+        const GOOGLE_SHEETS_API = "https://script.google.com/macros/s/AKfycbzT6XN6Re9il2J-JWYL27ZUhEF1tLHHd2pYt5HQdVtY0eWeTo52NzRZB1kJQFEBkKs/exec";
+
+        // Load players from Google Sheets when the page loads
+        document.addEventListener("DOMContentLoaded", function() {
+            fetchPlayers();
+        });
+
+        // Fetch players from Google Sheets
+        async function fetchPlayers() {
+            try {
+                const response = await fetch(GOOGLE_SHEETS_API, { 
+                    mode: 'cors',
+                    cache: 'no-cache' // Prevent caching issues in Edge
+                });
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+                }
+                const players = await response.json();
+                displayPlayers(players);
+            } catch (error) {
+                console.error("Error fetching players:", error);
+                document.getElementById("playerList").innerHTML = "<p style='color: #4E321E; text-align: center;'>Error loading lineup: " + error.message + "</p>";
+            }
+        }
+
+        // Display the player list, sorted by battingOrder
+        function displayPlayers(players) {
+            const playerList = document.getElementById("playerList");
+            playerList.innerHTML = "";
+            if (!players || players.length === 0) {
+                playerList.innerHTML = "<p style='text-align: center; font-size: 1.5em;'>No players in the lineup yet!</p>";
+            } else {
+                // Sort players by battingOrder (ascending)
+                players.sort(function(a, b) {
+                    return parseInt(a.battingOrder) - parseInt(b.battingOrder);
+                });
+
+                players.forEach(function(player) {
+                    const playerCard = document.createElement("div");
+                    playerCard.className = "player-card";
+                    playerCard.innerHTML = `
+                        <div class="batting-order">${player.battingOrder}</div>
+                        <div class="player-name">${player.childName}</div>
+                        <div class="player-number">#${player.childNumber}</div>
+                        <div class="position">Position: ${player.startingPosition}</div>
+                        <div class="walkout-song">"${player.walkoutSongName}" by ${player.walkoutSongArtistName} (Start: ${player.startingSecond}s)</div>
+                    `;
+                    playerList.appendChild(playerCard);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
