@@ -149,7 +149,7 @@
             text-align: center;
             padding: 25px 10px;
             font-size: 1.2em;
-            color: #FFFFFF; /* Changed to white */
+            color: #FFFFFF;
             text-shadow: 0 0 20px #4E321E;
             background: url('https://www.transparenttextures.com/patterns/scorched-metal.png');
             background-size: cover;
@@ -158,12 +158,12 @@
             width: 100%;
             margin-top: auto;
             border-image: url('https://www.transparenttextures.com/patterns/jagged-metal.png') 10 stretch;
-            font-family: 'Roboto', sans-serif; /* Changed to Roboto */
+            font-family: 'Roboto', sans-serif;
         }
         footer p {
             -webkit-text-stroke: 1px black;
-            font-weight: normal; /* Ensure no bold */
-            font-style: normal; /* Ensure no italic */
+            font-weight: normal;
+            font-style: normal;
         }
         @media (min-width: 600px) {
             header h1 { font-size: 4.5em; }
@@ -213,7 +213,7 @@
 
     <script>
         const GOOGLE_SHEETS_API = "https://script.google.com/macros/s/AKfycbzT6XN6Re9il2J-JWYL27ZUhEF1tLHHd2pYt5HQdVtY0eWeTo52NzRZB1kJQFEBkKs/exec";
-        const currentDate = new Date('2025-03-24').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        const currentDate = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
         document.getElementById('subtitle').textContent = `Players listed in batting order for ${currentDate} showdown`;
 
         document.addEventListener("DOMContentLoaded", function() {
