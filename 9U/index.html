@@ -54,7 +54,7 @@
             line-height: 1;
         }
         header h1 span {
-            display: block; /* Each word on its own line */
+            display: block;
         }
         .header-subtitle {
             font-family: 'Roboto', sans-serif;
@@ -138,6 +138,13 @@
             text-shadow: 0 0 15px #4E321E;
             -webkit-text-stroke: 1px black;
         }
+        .starting-second {
+            font-size: 1.8em;
+            color: #FFFFFF;
+            margin: 5px 0;
+            text-shadow: 0 0 15px #4E321E;
+            -webkit-text-stroke: 1px black;
+        }
         footer {
             text-align: center;
             padding: 25px 10px;
@@ -165,6 +172,7 @@
             .player-number { font-size: 2em; }
             .position { font-size: 2.2em; }
             .song { font-size: 2em; }
+            .starting-second { font-size: 2em; }
             footer { padding: 30px 15px; font-size: 1.4em; }
         }
         @media (min-width: 900px) {
@@ -245,7 +253,8 @@
                         <div class="player-name">${player.childName}</div>
                         <div class="player-number">#${player.childNumber}</div>
                         <div class="position">Starting Position: ${player.startingPosition}</div>
-                        <div class="song">Walkout Song: ${player.walkoutSongName} by ${player.walkoutSongArtistName} - ${player.startingSecond}s</div>
+                        <div class="song">Walkout Song: ${player.walkoutSongName} by ${player.walkoutSongArtistName} -</div>
+                        <div class="starting-second">Starting Second: ${player.startingSecond}s</div>
                     `;
                     playerList.appendChild(playerCard);
                 });
