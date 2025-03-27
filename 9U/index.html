@@ -59,6 +59,7 @@
             text-shadow: 0 0 25px #4E321E;
             -webkit-text-stroke: 1px black;
             transform: skewX(-10deg);
+            color: #FFFFFF; /* Changed to white */
         }
         .main-container {
             width: 100%;
@@ -79,7 +80,7 @@
             position: relative;
             overflow: hidden;
             border-image: url('https://www.transparenttextures.com/patterns/spikes.png') 10 stretch;
-            font-family: Arial, sans-serif; /* Added for player info */
+            font-family: Arial, sans-serif;
         }
         .batting-order {
             position: absolute;
@@ -110,7 +111,6 @@
             text-shadow: 0 0 20px #4E321E;
             -webkit-text-stroke: 1px black;
             line-height: 1;
-            /* font-weight: bold removed */
         }
         .player-number {
             font-size: 1.8em;
@@ -118,7 +118,6 @@
             text-shadow: 0 0 15px #4E321E;
             -webkit-text-stroke: 1px black;
             margin: 5px 0;
-            /* font-weight: bold removed */
         }
         .position {
             font-size: 2em;
@@ -192,7 +191,7 @@
 
     <script>
         const GOOGLE_SHEETS_API = "https://script.google.com/macros/s/AKfycbzT6XN6Re9il2J-JWYL27ZUhEF1tLHHd2pYt5HQdVtY0eWeTo52NzRZB1kJQFEBkKs/exec";
-        const currentDate = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        const currentDate = new Date('2025-03-27').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
         document.getElementById('subtitle').textContent = `Players listed in batting order for ${currentDate} showdown`;
 
         document.addEventListener("DOMContentLoaded", function() {
